@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FinAdvisor Pro</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;700&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+:root {
+  --bg: #080b10;
+  --s1: #0e1420;
+  --s2: #131b28;
+  --border: #1a2234;
+  --border2: #243044;
+  --gold: #c8a84b;
+  --gold2: #e8cc80;
+  --red: #e05555;
+  --green: #3dba76;
+  --blue: #4a90d9;
+  --text: #dde4f0;
+  --muted: #4a5870;
+  --muted2: #6b7a96;
+  --font-display: 'Playfair Display', Georgia, serif;
+  --font-mono: 'DM Mono', 'Courier New', monospace;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--bg);color:var(--text);font-family:var(--font-mono);font-size:13px;min-height:100vh;overflow-x:hidden}
+.app{display:grid;grid-template-columns:240px 1fr;min-height:100vh}
+.sidebar{background:var(--s1);border-right:1px solid var(--border);display:flex;flex-direction:column;position:sticky;top:0;height:100vh}
+.sidebar-logo{padding:28px 24px 20px;border-bottom:1px solid var(--border)}
+.sidebar-logo h1{font-family:var(--font-display);font-size:20px;color:var(--gold);line-height:1.2}
+.nav{padding:16px 12px;flex:1}
+.nav-section{font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);padding:14px 12px 6px}
+.nav-item{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:8px;cursor:pointer;color:var(--muted2);transition:all .2s;margin-bottom:2px;border:none;background:none;width:100%;text-align:left;font-family:var(--font-mono);font-size:12px}
+.nav-item:hover{background:var(--s2);color:var(--text)}
+.nav-item.active{background:rgba(200,168,75,.1);color:var(--gold);border:1px solid rgba(200,168,75,.15)}
+.main{display:flex;flex-direction:column;min-height:100vh}
+.topbar{background:var(--s1);border-bottom:1px solid var(--border);padding:16px 32px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
+.content{flex:1;padding:28px 32px;display:flex;flex-direction:column;gap:24px}
+.panel{background:var(--s1);border:1px solid var(--border);border-radius:14px;overflow:hidden}
+.panel-head{padding:18px 22px 14px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.panel-title{font-family:var(--font-display);font-size:15px;color:var(--text)}
+.panel-body{padding:22px}
+.grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px}
+.grid-4{display:grid;grid-template-columns:repeat(5,1fr);gap:12px}
+.stat{background:var(--s2);border:1px solid var(--border);border-radius:10px;padding:16px 18px}
+.stat-lbl{font-size:9px;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
+.stat-val{font-family:var(--font-display);font-size:22px;font-weight:500;color:var(--text)}
+.sl-group{display:flex;flex-direction:column;gap:5px}
+.sl-head{display:flex;justify-content:space-between;align-items:center}
+.sl-name{font-size:10px;color:var(--muted);text-transform:uppercase}
+.sl-val{font-size:13px;font-weight:500;color:var(--text)}
+input[type=range]{-webkit-appearance:none;width:100%;height:3px;background:var(--border2);border-radius:2px;outline:none;cursor:pointer}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:14px;height:14px;border-radius:50%;background:var(--gold);border:2px solid var(--bg)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:9px 18px;border-radius:8px;border:1px solid var(--border2);background:var(--s2);color:var(--text);font-family:var(--font-mono);font-size:12px;cursor:pointer;transition:all .2s}
+.btn.primary{background:rgba(200,168,75,.12);border-color:rgba(200,168,75,.3);color:var(--gold)}
+.btn.danger{background:rgba(224,85,85,.1);border-color:rgba(224,85,85,.25);color:var(--red)}
+.section{display:none} .section.active{display:flex;flex-direction:column;gap:24px}
+.suggestion-chip{background:var(--s2);border:1px solid var(--border2);border-radius:20px;padding:5px 11px;font-size:10px;color:var(--muted2);cursor:pointer;margin-right:5px}
+.bot-fab{position:fixed;bottom:28px;right:28px;width:52px;height:52px;border-radius:50%;background:linear-gradient(135deg,var(--gold),#a07020);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:22px;z-index:1000;color:#fff}
+.bot-window{position:fixed;bottom:92px;right:28px;width:360px;height:480px;background:var(--s1);border:1px solid var(--border2);border-radius:16px;display:flex;flex-direction:column;z-index:999;opacity:0;pointer-events:none;transition:all .25s} .bot-window.open{opacity:1;pointer-events:all;transform:scale(1)}
+.bot-header{padding:14px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.bot-messages{flex:1;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:10px}
+.msg{max-width:82%;padding:10px 13px;border-radius:12px;font-size:12px;line-height:1.55} .msg.bot{background:var(--s2);border:1px solid var(--border);align-self:flex-start} .msg.user{background:rgba(200,168,75,.15);border:1px solid rgba(200,168,75,.2);align-self:flex-end;color:var(--gold2)}
+.bot-input-row{padding:12px 14px;border-top:1px solid var(--border);display:flex;gap:8px}
+.bot-input{flex:1;background:var(--s2);border:1px solid var(--border2);border-radius:8px;padding:9px 12px;color:var(--text);font-family:var(--font-mono);font-size:12px;outline:none}
+</style>
+</head>
+<body>
+
+<div class="app">
+  <nav class="sidebar">
+    <div class="sidebar-logo"><h1>FinAdvisor<br>Pro</h1><p>Finanční Analýza</p></div>
+    <div class="nav">
+      <div class="nav-section">Hlavní</div>
+      <button class="nav-item active" onclick="showSection('overview')"><span class="nav-icon">◈</span> Přehled</button>
+      <div class="nav-section">Analýzy</div>
+      <button class="nav-item" onclick="showSection('bonita')"><span class="nav-icon">★</span> Bonita DTI/DSTI</button>
+      <button class="nav-item" onclick="showSection('funds')"><span class="nav-icon">⊕</span> Portfoliovač</button>
+    </div>
+  </nav>
+
+  <div class="main">
+    <div class="topbar"><div class="topbar-title" id="page-title">Přehled portfolia</div></div>
+    <div class="content">
+
+      <div id="sec-overview" class="section active">
+        <div class="panel">
+          <div class="panel-head"><div class="panel-title">Parametry portfolia</div></div>
+          <div class="panel-body">
+            <div class="grid-3" style="gap:20px 32px">
+              <div class="sl-group"><div class="sl-head"><span class="sl-name">Hypotéka</span><span class="sl-val red" id="sv-m">3 000 000 Kč</span></div><input type="range" id="sl-m" min="500000" max="10000000" step="100000" value="3000000" oninput="updateAll()"></div>
+              <div class="sl-group"><div class="sl-head"><span class="sl-name">Úrok hypotéky</span><span class="sl-val red" id="sv-mr">5,0 %</span></div><input type="range" id="sl-mr" min="1" max="12" step="0.1" value="5" oninput="updateAll()"></div>
+              <div class="sl-group"><div class="sl-head"><span class="sl-name">Splatnost</span><span class="sl-val" id="sv-term">30 let</span></div><input type="range" id="sl-term" min="5" max="30" step="1" value="30" oninput="updateAll()"></div>
+              <div class="sl-group"><div class="sl-head"><span class="sl-name">Investice (Jednorázová)</span><span class="sl-val green" id="sv-i">1 000 000 Kč</span></div><input type="range" id="sl-i" min="100000" max="5000000" step="50000" value="1000000" oninput="updateAll()"></div>
+              <div class="sl-group"><div class="sl-head"><span class="sl-name">Výnos portfolia</span><span class="sl-val green" id="sv-ir">8,0 %</span></div><input type="range" id="sl-ir" min="2" max="15" step="0.1" value="8" oninput="updateAll()"></div>
+              <div class="sl-group"><div class="sl-head"><span class="sl-name">Horizont</span><span class="sl-val gold" id="sv-hz">30 let</span></div><input type="range" id="sl-hz" min="5" max="30" step="1" value="30" oninput="updateAll()"></div>
+              <div class="sl-group" style="grid-column:span 3;border-top:1px solid var(--border);padding-top:14px"><div class="sl-head"><span class="sl-name">Pravidelná měsíční investice</span><span class="sl-val green" id="sv-mo">0 Kč / měs.</span></div><input type="range" id="sl-mo" min="0" max="50000" step="500" value="0" oninput="updateAll()"></div>
+              <div class="sl-group" style="grid-column:span 3"><div class="sl-head"><span class="sl-name">Nezávislý výnos pravid. investice (DCA)</span><span class="sl-val" style="color:var(--blue)" id="sv-mr2">8,0 %</span></div><input type="range" id="sl-mr2" min="1" max="20" step="0.1" value="8" oninput="updateAll()"></div>
+            </div>
+          </div>
+        </div>
+        <div class="grid-4" style="margin-top:24px">
+          <div class="stat red"><div class="stat-lbl">Zůstatek dluhu</div><div class="stat-val" id="ov-debt">3 000 000 Kč</div></div>
+          <div class="stat green"><div class="stat-lbl">Hodnota fondu</div><div class="stat-val" id="ov-inv">1 000 000 Kč</div></div>
+          <div class="stat green"><div class="stat-lbl">Vklady celkem</div><div class="stat-val" id="ov-dca">0 Kč</div></div>
+          <div class="stat gold"><div class="stat-lbl">Měs. splátka</div><div class="stat-val" id="ov-pmt">—</div></div>
+          <div class="stat blue"><div class="stat-lbl">Čistá pozice</div><div class="stat-val" id="ov-net">—</div></div>
+        </div>
+      </div>
+
+      <div id="sec-funds" class="section">
+        <div class="panel">
+          <div class="panel-head"><div><div class="panel-title">Sestavení modelového portfolia</div><div class="panel-sub">Vyhledejte fondy a nakombinujte jejich váhy</div></div></div>
+          <div class="panel-body">
+            <div style="display:flex;gap:10px;margin-bottom:16px">
+              <input id="fund-input" placeholder="Název fondu, ISIN, správce…" style="flex:1;background:var(--s2);border:1px solid var(--border2);border-radius:8px;padding:11px 14px;color:var(--text);font-family:var(--font-mono);outline:none" onkeydown="if(event.key==='Enter')searchFunds()">
+              <button class="btn primary" onclick="searchFunds()" id="fund-btn">⊕ Hledat</button>
+            </div>
+            <div id="fund-results" style="margin-bottom:24px"></div>
+            <div id="fund-compare-wrap" style="display:none;border-top:1px solid var(--border);padding-top:24px">
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px">
+                <div class="panel-title">Vaše kombinace investic</div>
+                <button class="btn danger" onclick="clearSavedFunds()">✕ Vymazat vše</button>
+              </div>
+              <div style="display:grid;grid-template-columns:3fr 2fr;gap:20px">
+                <div id="fund-compare-list" style="display:grid;gap:12px"></div>
+                <div id="portfolio-summary" style="background:rgba(200,168,75,.05);border:1px solid rgba(200,168,75,.2);border-radius:10px;padding:18px;height:fit-content"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div id="sec-bonita" class="section"><div class="panel"><div class="panel-body" style="text-align:center;color:var(--muted)">Bonitní kalkulačka DTI/DSTI je připravena k napojení na vaše interní parametry bank.</div></div></div>
+
+    </div>
+  </div>
+</div>
+
+<button class="bot-fab" onclick="toggleBot()">💬</button>
+<div class="bot-window" id="bot-window">
+  <div class="bot-header"><div class="bot-name">FinAdvisor AI</div><button onclick="toggleBot()" style="background:none;border:none;color:var(--muted);cursor:pointer">✕</button></div>
+  <div class="bot-messages" id="bot-msgs"><div class="msg bot">Dobrý den, Zdeňku! Server je aktivní. S čím vám mohu dnes pomoci?</div></div>
+  <div class="bot-input-row"><input class="bot-input" id="bot-input" placeholder="Zeptejte se..." onkeydown="if(event.key==='Enter')sendMsg()"><button class="btn" onclick="sendMsg()">➤</button></div>
+</div>
+
+<script>
+const S = { mortgage: 3000000, mortgageRate: 5, term: 30, invest: 1000000, investRate: 8, horizon: 30, monthly: 0, monthlyRate: 8 };
+let savedFunds = [];
+
+const fmt = n => Math.round(n).toLocaleString('cs-CZ') + ' Kč';
+const fmtPct = n => n.toFixed(1).replace('.',',') + ' %';
+
+function invVal(y, p=S.invest, r=S.investRate, m=S.monthly, mr=S.monthlyRate) {
+  const lump = p * Math.pow(1 + r/100, y);
+  if(!m) return lump;
+  const rMon = mr/100/12;
+  const dca = rMon>0 ? m * (Math.pow(1+rMon, y*12) - 1) / rMon : m * y * 12;
+  return lump + dca;
+}
+
+function updateAll() {
+  S.mortgage = +document.getElementById('sl-m').value;
+  S.mortgageRate = +document.getElementById('sl-mr').value;
+  S.term = +document.getElementById('sl-term').value;
+  S.invest = +document.getElementById('sl-i').value;
+  S.investRate = +document.getElementById('sl-ir').value;
+  S.horizon = +document.getElementById('sl-hz').value;
+  S.monthly = +document.getElementById('sl-mo').value;
+  S.monthlyRate = +document.getElementById('sl-mr2').value;
+  
+  document.getElementById('sv-m').textContent = fmt(S.mortgage);
+  document.getElementById('sv-mr').textContent = fmtPct(S.mortgageRate);
+  document.getElementById('sv-i').textContent = fmt(S.invest);
+  document.getElementById('sv-ir').textContent = fmtPct(S.investRate);
+  document.getElementById('sv-mo').textContent = fmt(S.monthly) + ' / měs.';
+  document.getElementById('sv-mr2').textContent = fmtPct(S.monthlyRate);
+  
+  const pmt = (S.mortgage * (S.mortgageRate/100/12)) / (1 - Math.pow(1 + (S.mortgageRate/100/12), -S.term*12));
+  document.getElementById('ov-pmt').textContent = fmt(pmt);
+  document.getElementById('ov-debt').textContent = fmt(S.mortgage);
+  const finalInv = invVal(S.horizon);
+  document.getElementById('ov-inv').textContent = fmt(finalInv);
+  document.getElementById('ov-dca').textContent = fmt(S.invest + S.monthly * S.horizon * 12);
+  const net = finalInv - S.mortgage;
+  document.getElementById('ov-net').textContent = (net >= 0 ? '+' : '') + fmt(net);
+}
+
+function showSection(id) {
+  document.querySelectorAll('.section').forEach(el => el.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+  document.getElementById('sec-' + id).classList.add('active');
+  event.currentTarget.classList.add('active');
+  document.getElementById('page-title').textContent = event.currentTarget.innerText.replace('◈ ', '').replace('★ ', '').replace('⊕ ', '');
+}
+
+async function searchFunds() {
+  const q = document.getElementById('fund-input').value.trim();
+  if (!q) return;
+  const btn = document.getElementById('fund-btn');
+  btn.textContent = '⏳ Hledám...';
+  btn.disabled = true;
+  document.getElementById('fund-results').innerHTML = `<div style="text-align:center;padding:20px;color:var(--muted)">AI analyzuje trh a hledá data o fondu...</div>`;
+
+  try {
+    const res = await fetch('/api/chat', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        messages: [{ role: 'user', content: `Vrať JSON data pro fond: "${q}". JSON musí obsahovat: name, type, ter (číslo), perf_3y (číslo), description. Nic jiného nevracej.` }]
+      })
+    });
+    const data = await res.json();
+    const fund = JSON.parse(data.content[0].text);
+    document.getElementById('fund-results').innerHTML = `
+      <div style="background:var(--s2);border:1px solid var(--border);padding:20px;border-radius:12px;display:flex;justify-content:space-between;align-items:center">
+        <div><h3 style="color:var(--gold)">${fund.name}</h3><p style="font-size:11px;color:var(--muted2);margin:8px 0">${fund.description}</p>
+        <div style="font-size:11px">Výnos: <strong>${fund.perf_3y}% p.a.</strong> | TER: <strong>${fund.ter}%</strong></div></div>
+        <button class="btn primary" onclick='addFundToPortfolio(${JSON.stringify(fund)})'>+ Přidat</button>
+      </div>`;
+  } catch(e) { document.getElementById('fund-results').innerHTML = `<div style="color:var(--red)">Nepodařilo se načíst data. Zkuste to znovu.</div>`; }
+  btn.textContent = '⊕ Hledat'; btn.disabled = false;
+}
+
+function addFundToPortfolio(f) {
+  if(savedFunds.find(x => x.name === f.name)) return;
+  savedFunds.push({...f, weight: Math.floor(100 / (savedFunds.length + 1))});
+  renderSavedFunds();
+}
+
+function renderSavedFunds() {
+  const wrap = document.getElementById('fund-compare-wrap');
+  const list = document.getElementById('fund-compare-list');
+  const summary = document.getElementById('portfolio-summary');
+  if(!savedFunds.length) { wrap.style.display = 'none'; return; }
+  wrap.style.display = 'block';
+  let totalW = 0, avgY = 0, avgT = 0;
+  list.innerHTML = savedFunds.map((f, i) => {
+    totalW += f.weight; avgY += f.perf_3y * (f.weight/100); avgT += f.ter * (f.weight/100);
+    return `<div style="background:var(--bg);border:1px solid var(--border);padding:12px;border-radius:8px;display:flex;justify-content:space-between;align-items:center">
+      <div style="font-size:11px"><strong>${f.name}</strong><br>Výnos: ${f.perf_3y}%</div>
+      <div style="display:flex;align-items:center;gap:10px"><span style="font-size:10px;color:var(--muted)">Váha %</span>
+      <input type="number" value="${f.weight}" onchange="savedFunds[${i}].weight=parseInt(this.value);renderSavedFunds()" style="width:50px;background:var(--s2);border:1px solid var(--border2);color:var(--text);padding:4px;border-radius:4px">
+      <button onclick="savedFunds.splice(${i},1);renderSavedFunds()" style="background:none;border:none;color:var(--red);cursor:pointer">✕</button></div></div>`;
+  }).join('');
+  summary.innerHTML = `<div style="font-size:13px;font-weight:500;color:var(--gold);margin-bottom:12px">Souhrn strategie</div>
+    <div style="font-size:11px;margin-bottom:8px">Alokace: <strong style="color:${totalW===100?'var(--green)':'var(--red)'}">${totalW}%</strong></div>
+    <div style="font-size:11px;margin-bottom:8px">Složený výnos: <strong>${avgY.toFixed(2)}% p.a.</strong></div>
+    <div style="font-size:11px;margin-bottom:15px">Průměrné TER: <strong>${avgT.toFixed(2)}%</strong></div>
+    <button class="btn primary" style="width:100%" onclick="applyRate(${avgY.toFixed(2)})" ${totalW!==100?'disabled':''}>Použít v portfoliu</button>`;
+}
+
+function applyRate(r) { document.getElementById('sl-ir').value = r; updateAll(); showSection('overview'); }
+function clearSavedFunds() { savedFunds = []; renderSavedFunds(); }
+function toggleBot() { document.getElementById('bot-window').classList.toggle('open'); }
+
+async function sendMsg() {
+  const inp = document.getElementById('bot-input'); const text = inp.value.trim(); if (!text) return;
+  const msgs = document.getElementById('bot-msgs');
+  msgs.innerHTML += `<div class="msg user">${text}</div>`; inp.value = '';
+  try {
+    const res = await fetch('/api/chat', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ messages: [{ role: 'user', content: text }] }) });
+    const data = await res.json();
+    msgs.innerHTML += `<div class="msg bot">${data.content[0].text}</div>`;
+  } catch(e) { msgs.innerHTML += `<div class="msg bot">Chyba serveru.</div>`; }
+  msgs.scrollTop = msgs.scrollHeight;
+}
+
+updateAll();
+</script>
+</body>
+</html>
