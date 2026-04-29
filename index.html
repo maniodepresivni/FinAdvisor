@@ -1,4 +1,45 @@
-<!DOCTYPE html>
+async function addFundToCompare() {
+  const input = document.getElementById('fund-search');
+  const fundName = input.value.trim();
+  if(!fundName) return;
+  
+  const btn = document.getElementById('btn-add-fund');
+  btn.textContent = "⏳ Hledám..."; btn.disabled = true;
+
+  try {
+    const response = await fetch('/api/chat', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        messages: [{ role: 'user', content: `Nasimuluj historický vývoj (index) pro fond "${fundName}" za posledních 10 let. Vrať čistě jen JSON pole 11 čísel. Nic jiného nepiš.` }]
+      })
+    });
+    
+    const data = await response.json();
+    const aiText = data.content[0].text;
+    
+    // Neprůstřelná extrakce: Najde v textu cokoliv mezi [ a ]
+    const match = aiText.match(/\[(.*?)\]/s);
+    if (!match) throw new Error("AI nevrátilo platné pole čísel.");
+    
+    const history = JSON.parse("[" + match[1] + "]");
+
+    compareList.push({
+      name: fundName,
+      data: history,
+      color: '#' + Math.floor(Math.random()*16777215).toString(16)
+    });
+
+    renderCompareChart();
+    updateCompareListUI();
+    input.value = '';
+  } catch (error) {
+    console.error("Detail chyby:", error);
+    alert("Nepodařilo se stáhnout data. Zkontrolujte název fondu nebo zkuste znovu.");
+  }
+  
+  btn.textContent = "+ Přidat"; btn.disabled = false;
+}<!DOCTYPE html>
 <html lang="cs">
 <head>
 <meta charset="UTF-8">
