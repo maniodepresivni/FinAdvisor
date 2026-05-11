@@ -136,4 +136,87 @@ input[type=text]:focus { border-color: var(--primary); }
       <div class="grid-2">
         <div class="card">
           <div class="card-title">Parametry obou scénářů</div>
-          <div class="control-group"><div class="control-header"><span class="control-label">Cena nemovitosti</span><span class="control-output" id="out-rb-p">0</span></div><input type="range" id="in-rb-p" min="1000000" max="20000000" step="10000
+          <div class="control-group"><div class="control-header"><span class="control-label">Cena nemovitosti</span><span class="control-output" id="out-rb-p">0</span></div><input type="range" id="in-rb-p" min="1000000" max="20000000" step="100000" value="5000000" oninput="calcRentBuy()"></div>
+          <div class="grid-2" style="gap:10px">
+            <div class="control-group"><div class="control-header"><span class="control-label">Vlastní zdroje (Akontace)</span><span class="control-output" id="out-rb-dp">0</span></div><input type="range" id="in-rb-dp" min="0" max="5000000" step="50000" value="1000000" oninput="calcRentBuy()"></div>
+            <div class="control-group"><div class="control-header"><span class="control-label">Úrok hypo p.a.</span><span class="control-output" id="out-rb-mr">0</span></div><input type="range" id="in-rb-mr" min="1" max="10" step="0.1" value="4.5" oninput="calcRentBuy()"></div>
+          </div>
+          <div class="control-group"><div class="control-header"><span class="control-label">Srovnatelné měsíční nájemné</span><span class="control-output" id="out-rb-rent">0</span></div><input type="range" id="in-rb-rent" min="5000" max="60000" step="500" value="20000" oninput="calcRentBuy()"></div>
+          <div class="grid-2" style="gap:10px">
+            <div class="control-group"><div class="control-header"><span class="control-label">Růst cen realit p.a.</span><span class="control-output" id="out-rb-gr">0</span></div><input type="range" id="in-rb-gr" min="0" max="10" step="0.1" value="3.0" oninput="calcRentBuy()"></div>
+            <div class="control-group"><div class="control-header"><span class="control-label">Výnos na trhu p.a.</span><span class="control-output" id="out-rb-ir">0</span></div><input type="range" id="in-rb-ir" min="0" max="12" step="0.1" value="7.0" oninput="calcRentBuy()"></div>
+          </div>
+          <div class="control-group"><div class="control-header"><span class="control-label">Investiční horizont (roky)</span><span class="control-output" id="out-rb-y">0</span></div><input type="range" id="in-rb-y" min="10" max="40" step="1" value="30" oninput="calcRentBuy()"></div>
+        </div>
+        <div class="card"><div class="card-title">Křivka tvoření majetku</div><div class="chart-wrapper"><canvas id="chartRentBuy"></canvas></div></div>
+      </div>
+    </div>
+
+    <div id="sec-invest" class="section">
+      <h1 class="header-title">Investice a reálná kupní síla</h1>
+      <p class="header-subtitle">Analýza vlivu poplatků a inflace na skutečnou hodnotu majetku.</p>
+      
+      <div class="info-box">
+        <strong>Metodika:</strong> Tradiční iterativní kalkulátor složeného úročení s přidáním dvou kritických faktorů pro praxi: <strong>TER</strong> (průběžné manažerské poplatky, které snižují hrubý výnos trhu) a <strong>Inflace</strong> (diskontování výsledné nominální částky zpět na dnešní kupní sílu). Klient tak jasně vidí rozdíl mezi papírovým výdělkem a reálnou hodnotou.
+      </div>
+
+      <div class="grid-4">
+        <div class="stat-box"><div class="stat-label">Vloženo celkem</div><div class="stat-value" id="inv-vlozeno">0 Kč</div></div>
+        <div class="stat-box"><div class="stat-label">Nominální hodnota</div><div class="stat-value text-success" id="inv-cista">0 Kč</div></div>
+        <div class="stat-box"><div class="stat-label">Reálná kupní síla (Po inflaci)</div><div class="stat-value text-danger" id="inv-realna">0 Kč</div></div>
+        <div class="stat-box"><div class="stat-label">Ztráta na poplatcích (TER)</div><div class="stat-value" id="inv-poplatky">0 Kč</div></div>
+      </div>
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-title">Parametry portfolia</div>
+          <div class="control-group"><div class="control-header"><span class="control-label">Jednorázový vklad</span><span class="control-output" id="out-inv-p">0</span></div><input type="range" id="in-inv-p" min="0" max="5000000" step="10000" value="100000" oninput="calcInvest()"></div>
+          <div class="control-group"><div class="control-header"><span class="control-label">Pravidelná měsíční investice</span><span class="control-output" id="out-inv-m">0</span></div><input type="range" id="in-inv-m" min="0" max="50000" step="500" value="5000" oninput="calcInvest()"></div>
+          <div class="grid-2" style="gap:10px">
+            <div class="control-group"><div class="control-header"><span class="control-label">Hrubý výnos %</span><span class="control-output" id="out-inv-r">8</span></div><input type="range" id="in-inv-r" min="0" max="15" step="0.1" value="8" oninput="calcInvest()"></div>
+            <div class="control-group"><div class="control-header"><span class="control-label">Poplatky/TER %</span><span class="control-output" style="color:var(--danger);background:#fee2e2" id="out-inv-f">1.5</span></div><input type="range" id="in-inv-f" min="0" max="5" step="0.1" value="1.5" oninput="calcInvest()"></div>
+          </div>
+          <div class="grid-2" style="gap:10px">
+            <div class="control-group"><div class="control-header"><span class="control-label">Inflace %</span><span class="control-output" id="out-inv-inf">2.5</span></div><input type="range" id="in-inv-inf" min="0" max="10" step="0.1" value="2.5" oninput="calcInvest()"></div>
+            <div class="control-group"><div class="control-header"><span class="control-label">Horizont (roky)</span><span class="control-output" id="out-inv-y">20</span></div><input type="range" id="in-inv-y" min="1" max="40" step="1" value="20" oninput="calcInvest()"></div>
+          </div>
+        </div>
+        <div class="card"><div class="card-title">Vývoj s degradací inflace</div><div class="chart-wrapper"><canvas id="chartInvest"></canvas></div></div>
+      </div>
+    </div>
+
+    <div id="sec-compare" class="section">
+      <h1 class="header-title">Srovnávač fondů a ETF</h1>
+      <p class="header-subtitle">Porovnejte výkonnosti aktiv v čase na bázi AI odhadů.</p>
+      
+      <div class="info-box">
+        <strong>Metodika:</strong> Vyhledávač využívá jazykový model Gemini k syntéze historického trendu aktiva a jeho vizualizaci na indexovaném grafu (výchozí bod = 100). Neslouží k přesnému backtestingu na koruny, ale k edukativnímu vizuálnímu porovnání volatility a dlouhodobé výkonnosti mezi různými typy fondů a akcií.
+      </div>
+
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-title">Nástroje v portfoliu</div>
+          <div style="display:flex; gap:10px; margin-bottom: 20px;">
+             <input type="text" id="fund-search" placeholder="Název fondu, ISIN nebo ticker (např. S&P 500)" onkeydown="if(event.key==='Enter') addFundToCompare()">
+             <button class="nav-btn action" style="width: auto; margin:0; padding: 0 20px;" onclick="addFundToCompare()" id="btn-add-fund">+ Přidat</button>
+          </div>
+          <div id="compare-list" style="display:flex; flex-direction:column; gap:10px;">
+             <div style="color:var(--text-muted); font-size: 13px;">Zatím nejsou vybrány žádné fondy.</div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title">Historická simulace (Indexováno)</div>
+          <div class="chart-wrapper"><canvas id="chartCompare"></canvas></div>
+        </div>
+      </div>
+    </div>
+
+    <div id="sec-renta" class="section">
+      <h1 class="header-title">Rentiérská kalkulačka (F.I.R.E.)</h1>
+      <p class="header-subtitle">Modelování finanční nezávislosti s ohledem na přesnou délku čerpání.</p>
+      
+      <div class="info-box">
+        <strong>Metodika F.I.R.E. (Financial Independence, Retire Early):</strong> Přístup postavený na vybudování dostatečného kapitálu k pokrytí měsíčních výdajů z pasivních výnosů portfolia. Původní hnutí pracuje s tzv. pravidlem 4 %, které předpokládá nekonečnou rentu. V této zpřesněné kalkulaci ovšem bereme v úvahu <strong>přesnou dobu dožití/čerpání renty</strong> (kapitál se může postupně rozpouštět) a upravujeme riziko – během čerpání se počítá s bezpečnějším (konzervativnějším) výnosem než ve fázi budování.
+      </div>
+
+      <div class="grid-4">
+        <div class="stat-box"><div class="stat-label">Pot
