@@ -51,11 +51,19 @@ input[type=range] { -webkit-appearance: none; width: 100%; height: 6px; backgrou
 input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 18px; height: 18px; border-radius: 50%; background: #fff; border: 2px solid var(--primary); cursor: pointer; }
 input[type=number], input[type=text] { width: 100%; padding: 8px 12px; border: 1px solid var(--border); border-radius: 8px; outline:none; }
 
-.chart-wrapper { position: relative; height: 350px; width: 100%; margin-top: 16px; }
+.chart-wrapper { position: relative; height: 350px; width: 100%; margin-top: 16px; background: #f8fafc; border-radius: 8px; }
 .section { display: none; } 
 .section.active { display: block; }
 .badge { display: inline-block; padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: 600; }
 .badge-ok { background: #dcfce7; color: #166534; } .badge-warn { background: #fee2e2; color: #991b1b; }
+
+@media print {
+  .sidebar, .nav-btn, input[type=range], #sec-compare input, #btn-add-fund { display: none !important; }
+  .app-container { height: auto; overflow: visible; }
+  .main-content { padding: 0; margin: 0; width: 100%; }
+  .card, .stat-box { box-shadow: none; border: 1px solid #000; break-inside: avoid; }
+  body { background: #fff; }
+}
 </style>
 </head>
 <body>
@@ -72,7 +80,7 @@ input[type=number], input[type=text] { width: 100%; padding: 8px 12px; border: 1
     <button class="nav-btn" onclick="openTab('invest')" id="btn-invest">📈 Investice a Inflace</button>
     <button class="nav-btn" onclick="openTab('renta')" id="btn-renta">🏖️ Renta (FIRE)</button>
     <button class="nav-btn" onclick="openTab('combo')" id="btn-combo">⚖️ Čistý majetek</button>
-    <button class="nav-btn" onclick="openTab('compare')" id="btn-compare">🔍 Srovnávač</button>
+    <button class="nav-btn" onclick="openTab('compare')" id="btn-compare">🔍 Srovnávač AI</button>
     
     <button class="nav-btn" style="margin-top: 24px; border: 1px solid #e2e8f0; text-align: center;" onclick="window.print()">📄 Uložit PDF</button>
   </div>
@@ -177,4 +185,322 @@ input[type=number], input[type=text] { width: 100%; padding: 8px 12px; border: 1
           <div class="control-group"><div class="control-header"><span class="control-label">Požadovaná renta (měsíčně)</span><span class="control-output" id="out-ren-w">30 000 Kč</span></div><input type="range" id="in-ren-w" min="10000" max="200000" step="1000" value="30000" oninput="runRenta()"></div>
           <div class="control-group"><div class="control-header"><span class="control-label">Aktuální majetek</span><span class="control-output" id="out-ren-p">500 000 Kč</span></div><input type="range" id="in-ren-p" min="0" max="10000000" step="50000" value="500000" oninput="runRenta()"></div>
           <div class="grid-2" style="gap:10px">
-            <div class="control-group"><div class="control-header"><span class="control-label">Součas
+            <div class="control-group"><div class="control-header"><span class="control-label">Současný věk</span><span class="control-output" id="out-ren-a1">30</span></div><input type="range" id="in-ren-a1" min="18" max="65" step="1" value="30" oninput="runRenta()"></div>
+            <div class="control-group"><div class="control-header"><span class="control-label">Věk startu renty</span><span class="control-output" id="out-ren-a2">60</span></div><input type="range" id="in-ren-a2" min="40" max="80" step="1" value="60" oninput="runRenta()"></div>
+          </div>
+          <div class="control-group" style="margin-top:10px"><div class="control-header"><span class="control-label">Délka čerpání renty (roky)</span><span class="control-output" id="out-ren-dur">25</span></div><input type="range" id="in-ren-dur" min="10" max="60" step="1" value="25" oninput="runRenta()"></div>
+          <div class="grid-2" style="gap:10px">
+            <div class="control-group"><div class="control-header"><span class="control-label">Výnos % (růst)</span><span class="control-output" id="out-ren-r1">7 %</span></div><input type="range" id="in-ren-r1" min="1" max="15" step="0.1" value="7" oninput="runRenta()"></div>
+            <div class="control-group"><div class="control-header"><span class="control-label">Výnos % (čerpání)</span><span class="control-output" id="out-ren-r2">4 %</span></div><input type="range" id="in-ren-r2" min="0" max="10" step="0.1" value="4" oninput="runRenta()"></div>
+          </div>
+        </div>
+        <div class="card"><div class="card-title">Životní cyklus majetku</div><div class="chart-wrapper"><canvas id="chartRenta"></canvas></div></div>
+      </div>
+    </div>
+
+    <div id="sec-combo" class="section">
+      <h1 class="header-title">Čistý majetek (Kombinace)</h1>
+      <p class="header-subtitle">Bod zlomu, kdy finanční aktiva převýší zůstatek hypotéky.</p>
+      
+      <div class="grid-4">
+        <div class="stat-box"><div class="stat-label">Čisté bohatství (Zisk)</div><div class="stat-value text-success" id="com-netwealth">0 Kč</div></div>
+        <div class="stat-box"><div class="stat-label">Zůstatek dluhu</div><div class="stat-value text-danger" id="com-debt">0 Kč</div></div>
+        <div class="stat-box"><div class="stat-label">Hodnota investic</div><div class="stat-value text-primary" id="com-inv">0 Kč</div></div>
+        <div class="stat-box"><div class="stat-label">Bod zlomu majetku</div><div class="stat-value" id="com-crossover">Nikdy</div></div>
+      </div>
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-title">Pasiva vs. Aktiva</div>
+          <div class="control-group"><div class="control-header"><span class="control-label">Výše hypotéky</span><span class="control-output" id="out-com-hp">0</span></div><input type="range" id="in-com-hp" min="500000" max="10000000" step="100000" value="3000000" oninput="runCombo()"></div>
+          <div class="grid-2" style="gap:10px">
+            <div class="control-group"><div class="control-header"><span class="control-label">Úrok hypo %</span><span class="control-output" id="out-com-hr">0</span></div><input type="range" id="in-com-hr" min="1" max="10" step="0.1" value="4.5" oninput="runCombo()"></div>
+            <div class="control-group"><div class="control-header"><span class="control-label">Splatnost (roky)</span><span class="control-output" id="out-com-hy">0</span></div><input type="range" id="in-com-hy" min="5" max="40" step="1" value="30" oninput="runCombo()"></div>
+          </div>
+          <div class="control-group" style="margin-top:15px"><div class="control-header"><span class="control-label">Počáteční vklad do investic</span><span class="control-output" id="out-com-ip">0</span></div><input type="range" id="in-com-ip" min="0" max="5000000" step="10000" value="500000" oninput="runCombo()"></div>
+          <div class="control-group"><div class="control-header"><span class="control-label">Měsíční investice</span><span class="control-output" id="out-com-im">0</span></div><input type="range" id="in-com-im" min="0" max="30000" step="500" value="3000" oninput="runCombo()"></div>
+          <div class="control-group"><div class="control-header"><span class="control-label">Výnos investic %</span><span class="control-output" id="out-com-ir">0</span></div><input type="range" id="in-com-ir" min="0" max="15" step="0.1" value="7" oninput="runCombo()"></div>
+        </div>
+        <div class="card"><div class="card-title">Růst majetku vs. Úmor dluhu</div><div class="chart-wrapper"><canvas id="chartCombo"></canvas></div></div>
+      </div>
+    </div>
+
+    <div id="sec-compare" class="section">
+      <h1 class="header-title">Srovnávač fondů (AI)</h1>
+      <p class="header-subtitle">Historický odhad výkonu indexů pomocí AI Gemini.</p>
+      
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-title">Nástroje v portfoliu</div>
+          <div style="display:flex; gap:10px; margin-bottom: 20px;">
+             <input type="text" id="fund-search" placeholder="Název fondu (např. S&P 500)" onkeydown="if(event.key==='Enter') runCompareAI()">
+             <button class="nav-btn action" style="width: auto; margin:0; padding: 0 20px;" onclick="runCompareAI()" id="btn-add-fund">+ Přidat</button>
+          </div>
+          <div id="compare-list" style="display:flex; flex-direction:column; gap:10px;">
+             <div style="color:var(--text-muted); font-size: 13px;">Zatím nejsou vybrány žádné fondy.</div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title">Historická simulace</div>
+          <div class="chart-wrapper"><canvas id="chartCompare"></canvas></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+// ==========================================
+// 1. ZÁKLADNÍ BEZPEČNÁ LOGIKA (Neumře na grafu)
+// ==========================================
+
+function fmt(num) { 
+  return Math.round(num).toLocaleString('cs-CZ') + ' Kč'; 
+}
+
+function getPmt(rate, nper, pv) { 
+  return rate === 0 ? pv / nper : pv * rate / (1 - Math.pow(1 + rate, -nper)); 
+}
+
+var charts = { mortgage: null, rentbuy: null, invest: null, renta: null, combo: null, compare: null };
+
+// Tato funkce hlídá, aby grafy NIKDY neshodily zbytek aplikace
+function safeDraw(cName, cId, type, labels, datasets) {
+  try {
+    if (typeof Chart === 'undefined') {
+      var el = document.getElementById(cId);
+      if(el) el.parentNode.innerHTML = '<div style="color:var(--danger); padding:20px; text-align:center; border: 1px dashed var(--danger); border-radius: 8px;"><b>Upozornění:</b> Grafická knihovna byla zablokována sítí.<br>Číselné výpočty ale fungují dál v textovém režimu.</div>';
+      return;
+    }
+    if (charts[cName]) charts[cName].destroy();
+    charts[cName] = new Chart(document.getElementById(cId).getContext('2d'), {
+      type: type,
+      data: { labels: labels, datasets: datasets },
+      options: { responsive: true, maintainAspectRatio: false }
+    });
+  } catch (e) {
+    console.error("Graf byl přeskočen kvůli chybě:", e);
+  }
+}
+
+// Přepínání záložek obalené v bezpečné karanténě
+function openTab(tabId) {
+  try {
+    var sections = document.getElementsByClassName('section');
+    for (var i = 0; i < sections.length; i++) { 
+      sections[i].style.display = 'none'; 
+      sections[i].classList.remove('active'); 
+    }
+    var buttons = document.getElementsByClassName('nav-btn');
+    for (var j = 0; j < buttons.length; j++) { 
+      buttons[j].classList.remove('active'); 
+    }
+
+    var activeSec = document.getElementById('sec-' + tabId);
+    if(activeSec) {
+      activeSec.style.display = 'block';
+      activeSec.classList.add('active');
+    }
+    
+    var activeBtn = document.getElementById('btn-' + tabId);
+    if(activeBtn) activeBtn.classList.add('active');
+
+    // Spouštíme až poté, co je záložka 100% vidět
+    if (tabId === 'mortgage') runMortgage();
+    if (tabId === 'rentbuy') runRentBuy();
+    if (tabId === 'invest') runInvest();
+    if (tabId === 'renta') runRenta();
+    if (tabId === 'combo') runCombo();
+    if (tabId === 'compare' && typeof renderCompareChart === 'function') renderCompareChart();
+  } catch (e) {
+    console.error("Chyba při přepínání záložky:", e);
+  }
+}
+
+// ==========================================
+// 2. VÝPOČTY (Každý je chráněn samostatně)
+// ==========================================
+
+function runMortgage() {
+  try {
+    var P = Number(document.getElementById('in-hyp-p').value);
+    var R = Number(document.getElementById('in-hyp-r').value);
+    var Y = Number(document.getElementById('in-hyp-y').value);
+    var Inc = Number(document.getElementById('in-hyp-inc').value) || 1;
+    var Debts = Number(document.getElementById('in-hyp-debts').value) || 0;
+    
+    document.getElementById('out-hyp-p').textContent = fmt(P); 
+    document.getElementById('out-hyp-r').textContent = R.toFixed(1) + '%'; 
+    document.getElementById('out-hyp-y').textContent = Y;
+    
+    var pmt = getPmt(R/100/12, Y*12, P);
+    var dti = P/(Inc*12);
+    var dsti = ((pmt+Debts)/Inc)*100;
+    
+    document.getElementById('hyp-splatka').textContent = fmt(pmt); 
+    document.getElementById('hyp-preplatek').textContent = fmt(pmt*Y*12 - P);
+    document.getElementById('hyp-dti').innerHTML = '<span class="badge ' + (dti>8.5?'badge-warn':'badge-ok') + '">' + dti.toFixed(1) + '</span>';
+    document.getElementById('hyp-dsti').innerHTML = '<span class="badge ' + (dsti>45?'badge-warn':'badge-ok') + '">' + dsti.toFixed(1) + '%</span>';
+    
+    var lbl = [], dBal = [], bal = P; 
+    for(var m=0; m<=Y*12; m+=12) { 
+      lbl.push(m/12); dBal.push(Math.round(bal)); 
+      bal -= (pmt*12 - bal*(R/100)); if(bal<0) bal=0; 
+    }
+
+    safeDraw('mortgage', 'chartMortgage', 'bar', lbl, [{ label: 'Zůstatek', data: dBal, backgroundColor: '#2563eb', borderRadius: 4 }]);
+  } catch(e) { console.error(e); }
+}
+
+function runRentBuy() {
+  try {
+    var P = Number(document.getElementById('in-rb-p').value), DP = Number(document.getElementById('in-rb-dp').value), MR = Number(document.getElementById('in-rb-mr').value);
+    var Rent = Number(document.getElementById('in-rb-rent').value), GR = Number(document.getElementById('in-rb-gr').value), IR = Number(document.getElementById('in-rb-ir').value), Y = Number(document.getElementById('in-rb-y').value);
+    
+    document.getElementById('out-rb-p').textContent = fmt(P); document.getElementById('out-rb-dp').textContent = fmt(DP); document.getElementById('out-rb-mr').textContent = MR.toFixed(1)+'%';
+    document.getElementById('out-rb-rent').textContent = fmt(Rent); document.getElementById('out-rb-gr').textContent = GR.toFixed(1)+'%'; document.getElementById('out-rb-ir').textContent = IR.toFixed(1)+'%'; document.getElementById('out-rb-y').textContent = Y;
+    
+    var loan = P - DP, mortPmt = getPmt(MR/100/12, Y*12, loan), costOwn = mortPmt + (P * 0.01 / 12);
+    var lbl = [], dOwn = [], dRent = [], propVal = P, bal = loan, inv = DP, currRent = Rent;
+    
+    for(var y=0; y<=Y; y++) {
+      lbl.push(y); dOwn.push(Math.round(propVal - Math.max(0, bal))); dRent.push(Math.round(inv));
+      if(y<Y) { 
+        propVal *= (1 + GR/100); 
+        for(var m=0; m<12; m++) { bal -= (mortPmt - bal*(MR/100/12)); var diff = costOwn - currRent; inv = inv*(1 + IR/100/12) + (diff > 0 ? diff : 0); } 
+        currRent *= (1 + 0.02); 
+      }
+    }
+    document.getElementById('rb-vlastni').textContent = fmt(dOwn[Y]); document.getElementById('rb-najem').textContent = fmt(dRent[Y]); document.getElementById('rb-splatka').textContent = fmt(costOwn); document.getElementById('rb-rent').textContent = fmt(Rent);
+    
+    safeDraw('rentbuy', 'chartRentBuy', 'line', lbl, [{ label: 'Vlastní', data: dOwn, borderColor: '#2563eb', backgroundColor: 'rgba(37,99,235,0.1)', fill:true, pointRadius:0 }, { label: 'Nájem', data: dRent, borderColor: '#10b981', borderWidth: 2, borderDash: [5,5], pointRadius:0 }]);
+  } catch(e) { console.error(e); }
+}
+
+function runInvest() {
+  try {
+    var P = Number(document.getElementById('in-inv-p').value), M = Number(document.getElementById('in-inv-m').value), R = Number(document.getElementById('in-inv-r').value);
+    var F = Number(document.getElementById('in-inv-f').value), Inf = Number(document.getElementById('in-inv-inf').value), Y = Number(document.getElementById('in-inv-y').value);
+    
+    document.getElementById('out-inv-p').textContent = fmt(P); document.getElementById('out-inv-m').textContent = fmt(M); document.getElementById('out-inv-r').textContent = R.toFixed(1)+'%';
+    document.getElementById('out-inv-f').textContent = F.toFixed(1)+'%'; document.getElementById('out-inv-inf').textContent = Inf.toFixed(1)+'%'; document.getElementById('out-inv-y').textContent = Y;
+    
+    var lbl = [], dInv = [], dNet = [], dReal = [], currInv = P, currNet = P, currGross = P;
+    var rNet = (R - F)/100/12, rGross = R/100/12;
+    
+    for (var m = 0; m <= Y*12; m++) {
+      if (m%12===0) { lbl.push(m/12); dInv.push(Math.round(currInv)); dNet.push(Math.round(currNet)); dReal.push(Math.round(currNet / Math.pow(1 + Inf/100, m/12))); }
+      if (m < Y*12) { currInv += M; currGross = currGross*(1+rGross)+M; currNet = currNet*(1+rNet)+M; }
+    }
+    document.getElementById('inv-vlozeno').textContent = fmt(currInv); document.getElementById('inv-cista').textContent = fmt(currNet); document.getElementById('inv-realna').textContent = fmt(dReal[dReal.length-1]); document.getElementById('inv-poplatky').textContent = fmt(currGross - currNet);
+    
+    safeDraw('invest', 'chartInvest', 'line', lbl, [{ label: 'Čistá', data: dNet, borderColor: '#10b981', backgroundColor: 'rgba(16,185,129,0.1)', fill:true, pointRadius:0 }, { label: 'Reálná', data: dReal, borderColor: '#ef4444', borderDash: [5,5], borderWidth: 2, pointRadius:0 }, { label: 'Vloženo', data: dInv, borderColor: '#2563eb', borderWidth: 2, pointRadius:0 }]);
+  } catch(e) { console.error(e); }
+}
+
+function runRenta() {
+  try {
+    var W = Number(document.getElementById('in-ren-w').value), P = Number(document.getElementById('in-ren-p').value), A1 = Number(document.getElementById('in-ren-a1').value);
+    var A2 = Number(document.getElementById('in-ren-a2').value), duration = Number(document.getElementById('in-ren-dur').value), R1 = Number(document.getElementById('in-ren-r1').value), R2 = Number(document.getElementById('in-ren-r2').value);
+    
+    if (A2 <= A1) { document.getElementById('in-ren-a2').value = A1 + 1; return runRenta(); }
+    
+    document.getElementById('out-ren-w').textContent = fmt(W); document.getElementById('out-ren-p').textContent = fmt(P); document.getElementById('out-ren-a1').textContent = A1; document.getElementById('out-ren-a2').textContent = A2;
+    document.getElementById('out-ren-dur').textContent = duration; document.getElementById('out-ren-r1').textContent = R1.toFixed(1)+'%'; document.getElementById('out-ren-r2').textContent = R2.toFixed(1)+'%';
+    
+    var yearsToSave = A2 - A1, r2Mon = R2 / 100 / 12, nRetire = duration * 12;
+    var target = r2Mon > 0 ? (W * (1 - Math.pow(1 + r2Mon, -nRetire)) / r2Mon) : (W * nRetire);
+    var futureP = P * Math.pow(1 + R1/100, yearsToSave), pmt = 0;
+    if (target > futureP) { var r1Mon = R1/100/12; pmt = (target - futureP) * r1Mon / (Math.pow(1 + r1Mon, yearsToSave*12) - 1); }
+    
+    document.getElementById('ren-cil').textContent = fmt(target); document.getElementById('ren-vyber').textContent = fmt(W); document.getElementById('ren-doba').textContent = yearsToSave; document.getElementById('ren-pmt').textContent = fmt(Math.max(0, pmt));
+    
+    var lbl = [], dVal = [], curr = P;
+    for(var y=0; y<=yearsToSave + duration; y++) { lbl.push("Věk " + (A1+y)); dVal.push(Math.round(curr)); if(y < yearsToSave) { curr = curr*(1+R1/100) + (pmt*12); } else { curr = curr*(1+R2/100) - (W*12); if(curr < 0) curr = 0; } }
+    
+    safeDraw('renta', 'chartRenta', 'line', lbl, [{ label: 'Kapitál', data: dVal, borderColor: '#3b82f6', backgroundColor: 'rgba(59,130,246,0.1)', fill:true, pointRadius:0 }]);
+  } catch(e) { console.error(e); }
+}
+
+function runCombo() {
+  try {
+    var hP = Number(document.getElementById('in-com-hp').value), hR = Number(document.getElementById('in-com-hr').value), hY = Number(document.getElementById('in-com-hy').value);
+    var iP = Number(document.getElementById('in-com-ip').value), iM = Number(document.getElementById('in-com-im').value), iR = Number(document.getElementById('in-com-ir').value);
+    
+    document.getElementById('out-com-hp').textContent = fmt(hP); document.getElementById('out-com-hr').textContent = hR.toFixed(1); document.getElementById('out-com-hy').textContent = hY;
+    document.getElementById('out-com-ip').textContent = fmt(iP); document.getElementById('out-com-im').textContent = fmt(iM); document.getElementById('out-com-ir').textContent = iR.toFixed(1);
+    
+    var pmt = getPmt(hR/100/12, hY*12, hP); 
+    var lbl=[], dNet=[], dDebt=[], dInv=[], bal=hP, inv=iP, cross="Nikdy";
+    
+    for(var m=0; m<=hY*12; m++) {
+      if(m%12===0) { lbl.push(m/12); dDebt.push(Math.round(bal)); dInv.push(Math.round(inv)); dNet.push(Math.round(inv-bal)); }
+      if(cross==="Nikdy" && inv>bal) cross = "V " + Math.floor(m/12) + ". roce";
+      if(m<hY*12) { bal -= (pmt-bal*(hR/100/12)); inv = inv*(1+iR/100/12)+iM; }
+    }
+    document.getElementById('com-netwealth').textContent=fmt(inv-bal); document.getElementById('com-debt').textContent=fmt(bal); document.getElementById('com-inv').textContent=fmt(inv); 
+    document.getElementById('com-crossover').innerHTML='<span class="badge ' + (cross!=='Nikdy'?'badge-ok':'badge-warn') + '">' + cross + '</span>';
+    
+    safeDraw('combo', 'chartCombo', 'line', lbl, [{ label: 'Čistý majetek', data: dNet, borderColor: '#10b981', backgroundColor: 'rgba(16,185,129,0.1)', fill:true, pointRadius:0 }, { label: 'Investice', data: dInv, borderColor: '#3b82f6', borderDash: [5,5], pointRadius:0 }, { label: 'Dluh', data: dDebt, borderColor: '#ef4444', pointRadius:0 }]);
+  } catch(e) { console.error(e); }
+}
+
+// ==========================================
+// 3. SROVNÁVAČ A SPOJENÍ S AI
+// ==========================================
+var aiCompareList = [];
+
+function runCompareAI() {
+  var input = document.getElementById('fund-search');
+  var fundName = input.value.trim();
+  if(!fundName) return;
+  var btn = document.getElementById('btn-add-fund');
+  btn.textContent = "⏳..."; btn.disabled = true;
+
+  fetch('/api/chat', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ messages: [{ role: 'user', content: 'Vrať JSON pole 11 čísel simulujících vývoj fondu "' + fundName + '" za 10 let.' }] })
+  })
+  .then(function(res) { return res.json(); })
+  .then(function(data) {
+    var match = data.content[0].text.match(/\[([\s\S]*?)\]/);
+    if(match) {
+      aiCompareList.push({ name: fundName, data: JSON.parse("[" + match[1] + "]"), color: '#' + Math.floor(Math.random()*16777215).toString(16) });
+      renderCompareChart();
+      updateCompareListUI();
+      input.value = '';
+    }
+    btn.textContent = "+ Přidat"; btn.disabled = false;
+  })
+  .catch(function(e) {
+    alert("Chyba spojení s AI.");
+    btn.textContent = "+ Přidat"; btn.disabled = false;
+  });
+}
+
+function renderCompareChart() {
+  try {
+    var datasets = [];
+    for(var i=0; i<aiCompareList.length; i++) datasets.push({ label: aiCompareList[i].name, data: aiCompareList[i].data, borderColor: aiCompareList[i].color, tension: 0.3, pointRadius: 4, borderWidth: 2 });
+    safeDraw('compare', 'chartCompare', 'line', ['Dnes','Rok 1','Rok 2','Rok 3','Rok 4','Rok 5','Rok 6','Rok 7','Rok 8','Rok 9','Rok 10'], datasets);
+  } catch (e) { console.error(e); }
+}
+
+function updateCompareListUI() {
+  var list = document.getElementById('compare-list');
+  if(aiCompareList.length === 0) { list.innerHTML = 'Prázdné.'; return; }
+  var html = '';
+  for(var i=0; i<aiCompareList.length; i++) {
+    html += '<div style="margin-top:5px; padding: 10px; background: #f8fafc; border: 1px solid #e2e8f0; display:flex; justify-content: space-between;"><span style="color:'+aiCompareList[i].color+'; font-weight:bold;">'+aiCompareList[i].name+'</span> <button style="color: red; border:none; background:none; cursor:pointer;" onclick="aiCompareList.splice('+i+',1); renderCompareChart(); updateCompareListUI();">Smazat</button></div>';
+  }
+  list.innerHTML = html;
+}
+
+// Spustíme první záložku ihned po načtení
+window.onload = function() {
+  try { openTab('mortgage'); } catch(e) {}
+};
+</script>
+</body>
+</html>
