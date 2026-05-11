@@ -26,14 +26,13 @@ body { background: var(--bg); color: var(--text-main); font-size: 14px; }
 .nav-btn.active { background: var(--primary-light); color: var(--primary); font-weight: 600; }
 .nav-btn.action { margin-top: 24px; border: 1px solid var(--border); color: var(--text-main); justify-content: center; }
 
-.main-content { flex: 1; overflow-y: auto; padding: 32px 48px; position: relative; }
+.main-content { flex: 1; overflow-y: auto; padding: 32px 48px; }
 .header-title { font-size: 28px; font-weight: 700; margin-bottom: 8px; }
 .header-subtitle { color: var(--text-muted); font-size: 14px; margin-bottom: 20px; }
 
 .info-box { background: var(--info-bg); border-left: 4px solid var(--info-border); padding: 16px; border-radius: 4px; color: var(--info-text); font-size: 13px; line-height: 1.5; margin-bottom: 24px; }
 .info-box strong { color: #0c4a6e; }
-
-#error-banner { display: none; background: var(--danger); color: white; padding: 12px; border-radius: 8px; font-weight: 600; margin-bottom: 20px; text-align: center; }
+.error-banner { display: none; background: var(--danger); color: white; padding: 12px; border-radius: 8px; font-weight: 600; margin-bottom: 20px; text-align: center; }
 
 .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
 .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px; }
@@ -75,27 +74,24 @@ input[type=text]:focus { border-color: var(--primary); }
 <div class="app-container">
   <div class="sidebar">
     <div class="logo"><span>◆</span> FinAdvisor</div>
-    
     <div class="nav-section-title">Hypotéky & Úvěry</div>
     <button class="nav-btn active" onclick="switchTab('mortgage')" id="btn-mortgage">🏠 Hypotéka & Bonita</button>
     <button class="nav-btn" onclick="switchTab('rentbuy')" id="btn-rentbuy">🏢 Nájem vs. Vlastní</button>
-
     <div class="nav-section-title">Investice & Majetek</div>
     <button class="nav-btn" onclick="switchTab('invest')" id="btn-invest">📈 Investice & Inflace</button>
     <button class="nav-btn" onclick="switchTab('compare')" id="btn-compare">🔍 Srovnávač fondů</button>
     <button class="nav-btn" onclick="switchTab('renta')" id="btn-renta">🏖️ Renta (F.I.R.E.)</button>
     <button class="nav-btn" onclick="switchTab('combo')" id="btn-combo">⚖️ Čistý majetek</button>
-
     <button class="nav-btn action" onclick="window.print()">📄 Exportovat do PDF</button>
   </div>
 
   <div class="main-content">
-    <div id="error-banner">⚠️ Upozornění: Vaše firemní síť zablokovala stažení grafů. Aplikace a výpočty fungují dál v textovém režimu.</div>
+    <div id="chart-error" class="error-banner">⚠️ Upozornění: Vaše firemní síť blokuje grafy. Číselné výpočty fungují dál.</div>
 
     <div id="sec-mortgage" class="section active">
       <h1 class="header-title">Hypotéka a Bonita</h1>
       <p class="header-subtitle">Výpočet parametrů úvěru a posouzení dle limitů ČNB.</p>
-      <div class="info-box"><strong>Metodika:</strong> Kalkulátor počítá přesný anuitní úmor jistiny. Součástí je okamžitý výpočet bonitních limitů – <strong>DTI</strong> (celkové zadlužení nesmí přesáhnout 8,5-9,5 násobek příjmu) a <strong>DSTI</strong> (splátky nesmí překročit 45-50 % příjmu).</div>
+      <div class="info-box"><strong>Metodika:</strong> Výpočet anuitního úmoru a bonitních limitů DTI a DSTI. Slouží k rychlé kvalifikaci klienta.</div>
       <div class="grid-4">
         <div class="stat-box"><div class="stat-label">Měsíční splátka</div><div class="stat-value text-primary" id="hyp-splatka">0 Kč</div></div>
         <div class="stat-box"><div class="stat-label">Přeplatek na úrocích</div><div class="stat-value text-danger" id="hyp-preplatek">0 Kč</div></div>
@@ -108,4 +104,46 @@ input[type=text]:focus { border-color: var(--primary); }
           <div class="control-group"><div class="control-header"><span class="control-label">Výše hypotéky</span><span class="control-output" id="out-hyp-p">0</span></div><input type="range" id="in-hyp-p" min="500000" max="15000000" step="100000" value="3000000" oninput="calcMortgage()"></div>
           <div class="grid-2" style="gap:10px">
             <div class="control-group"><div class="control-header"><span class="control-label">Úrok %</span><span class="control-output" id="out-hyp-r">0</span></div><input type="range" id="in-hyp-r" min="1" max="10" step="0.1" value="4.5" oninput="calcMortgage()"></div>
-            <div class="control-group"><div class="control-header"><span class="control-label">Splatnost</span><span class="control-output" id="out-hyp-y">0</span></div><input type="range" id="in-hyp-y" min="5" max="40" step
+            <div class="control-group"><div class="control-header"><span class="control-label">Splatnost</span><span class="control-output" id="out-hyp-y">0</span></div><input type="range" id="in-hyp-y" min="5" max="40" step="1" value="30" oninput="calcMortgage()"></div>
+          </div>
+          <div class="control-group" style="margin-top:20px"><label class="control-label">Čistý měsíční příjem domácnosti (Kč)</label><input type="number" id="in-hyp-inc" value="60000" oninput="calcMortgage()"></div>
+          <div class="control-group"><label class="control-label">Ostatní splátky (leasing, spotř. úvěry)</label><input type="number" id="in-hyp-debts" value="0" oninput="calcMortgage()"></div>
+        </div>
+        <div class="card"><div class="card-title">Úmor jistiny v čase</div><div class="chart-wrapper"><canvas id="chartMortgage">Načítání grafu...</canvas></div></div>
+      </div>
+    </div>
+
+    <div id="sec-rentbuy" class="section">
+      <h1 class="header-title">Nájem vs. Vlastní bydlení</h1>
+      <p class="header-subtitle">Analýza nákladů obětované příležitosti.</p>
+      <div class="info-box"><strong>Metodika:</strong> Scénář "Vlastní" počítá s růstem ceny nemovitosti a umořováním dluhu. Scénář "Nájem" simuluje placení nájmu a investování rozdílu mezi splátkou hypotéky a čistým nájmem.</div>
+      <div class="grid-4">
+        <div class="stat-box"><div class="stat-label">Majetek (Vlastní bydlení)</div><div class="stat-value text-primary" id="rb-vlastni">0 Kč</div></div>
+        <div class="stat-box"><div class="stat-label">Majetek (Nájem + Investice)</div><div class="stat-value text-success" id="rb-najem">0 Kč</div></div>
+        <div class="stat-box"><div class="stat-label">Měsíční výdaj (Hypo+Fond)</div><div class="stat-value" id="rb-splatka">0 Kč</div></div>
+        <div class="stat-box"><div class="stat-label">Měsíční výdaj (Aktuální nájem)</div><div class="stat-value" id="rb-rent">0 Kč</div></div>
+      </div>
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-title">Parametry obou scénářů</div>
+          <div class="control-group"><div class="control-header"><span class="control-label">Cena nemovitosti</span><span class="control-output" id="out-rb-p">0</span></div><input type="range" id="in-rb-p" min="1000000" max="20000000" step="100000" value="5000000" oninput="calcRentBuy()"></div>
+          <div class="grid-2" style="gap:10px">
+            <div class="control-group"><div class="control-header"><span class="control-label">Vlastní zdroje (Akontace)</span><span class="control-output" id="out-rb-dp">0</span></div><input type="range" id="in-rb-dp" min="0" max="5000000" step="50000" value="1000000" oninput="calcRentBuy()"></div>
+            <div class="control-group"><div class="control-header"><span class="control-label">Úrok hypo p.a.</span><span class="control-output" id="out-rb-mr">0</span></div><input type="range" id="in-rb-mr" min="1" max="10" step="0.1" value="4.5" oninput="calcRentBuy()"></div>
+          </div>
+          <div class="control-group"><div class="control-header"><span class="control-label">Srovnatelné měsíční nájemné</span><span class="control-output" id="out-rb-rent">0</span></div><input type="range" id="in-rb-rent" min="5000" max="60000" step="500" value="20000" oninput="calcRentBuy()"></div>
+          <div class="grid-2" style="gap:10px">
+            <div class="control-group"><div class="control-header"><span class="control-label">Růst cen realit p.a.</span><span class="control-output" id="out-rb-gr">0</span></div><input type="range" id="in-rb-gr" min="0" max="10" step="0.1" value="3.0" oninput="calcRentBuy()"></div>
+            <div class="control-group"><div class="control-header"><span class="control-label">Výnos trhu p.a.</span><span class="control-output" id="out-rb-ir">0</span></div><input type="range" id="in-rb-ir" min="0" max="12" step="0.1" value="7.0" oninput="calcRentBuy()"></div>
+          </div>
+          <div class="control-group"><div class="control-header"><span class="control-label">Horizont (roky)</span><span class="control-output" id="out-rb-y">0</span></div><input type="range" id="in-rb-y" min="10" max="40" step="1" value="30" oninput="calcRentBuy()"></div>
+        </div>
+        <div class="card"><div class="card-title">Křivka tvoření majetku</div><div class="chart-wrapper"><canvas id="chartRentBuy">Načítání grafu...</canvas></div></div>
+      </div>
+    </div>
+
+    <div id="sec-invest" class="section">
+      <h1 class="header-title">Investice a reálná kupní síla</h1>
+      <p class="header-subtitle">Analýza vlivu poplatků a inflace na skutečnou hodnotu majetku.</p>
+      <div class="info-box"><strong>Metodika:</strong> Kalkulátor složeného úročení s přidáním <strong>TER</strong> (manažerské poplatky) a <strong>Inflace</strong> (diskontování výsledné nominální částky na dnešní kupní sílu).</div>
+      <div class="grid-4
