@@ -116,7 +116,6 @@ input[type=number], input[type=text], select { width: 100%; padding: 8px 12px; b
     <div id="sec-vypadek" class="section">
       <h1 class="header-title">Výpadek příjmu (Nemoc a Invalidita)</h1>
       <p class="header-subtitle">Analýza schopnosti domácnosti přežít zdravotní komplikace bez pojištění.</p>
-      <div class="info-box"><strong>Metodika:</strong> Model ukazuje drastický propad příjmů při dlouhodobé nemoci (státní podpora cca 60 %) a plné invaliditě (cca 45-50 %). Graf jasně demonstruje, za jak dlouho rodina vyčerpá své úspory a začne se zadlužovat.</div>
       <div class="grid-4">
         <div class="stat-box"><div class="stat-label">Čistý měsíční příjem</div><div class="stat-value text-primary" id="vyp-inc">0 Kč</div></div>
         <div class="stat-box"><div class="stat-label">Měsíční výdaje</div><div class="stat-value text-danger" id="vyp-exp">0 Kč</div></div>
@@ -137,7 +136,6 @@ input[type=number], input[type=text], select { width: 100%; padding: 8px 12px; b
     <div id="sec-hlv" class="section">
       <h1 class="header-title">Hodnota lidského života (HLV)</h1>
       <p class="header-subtitle">Výpočet optimální pojistné částky pro případ úmrtí živitele.</p>
-      <div class="info-box"><strong>Metodika:</strong> Pojištění pro případ smrti se nestřílí od boku. Zajištění musí pokrýt nesplacené dluhy (hypotéku), náklady na odchování dětí (cca 1 mil. Kč na dítě) a nahradit alespoň 50-70 % příjmu živitele po zbytek produktivního věku, aby si rodina udržela standard.</div>
       <div class="grid-4">
         <div class="stat-box"><div class="stat-label">Potřebné krytí celkem</div><div class="stat-value text-primary" id="hlv-total">0 Kč</div></div>
         <div class="stat-box"><div class="stat-label">Na úhradu dluhů</div><div class="stat-value text-danger" id="hlv-debt">0 Kč</div></div>
@@ -148,7 +146,7 @@ input[type=number], input[type=text], select { width: 100%; padding: 8px 12px; b
         <div class="card">
           <div class="card-title">Parametry pro výpočet krytí</div>
           <div class="control-group"><div class="control-header"><span class="control-label">Čistý měsíční příjem</span><span class="control-output" id="out-hlv-inc">0 Kč</span></div><input type="range" id="in-hlv-inc" min="15000" max="200000" step="1000" value="50000" oninput="runHLV()"></div>
-          <div class="control-group"><div class="control-header"><span class="control-label">Počet let do konce kariéry / osamostatnění dětí</span><span class="control-output" id="out-hlv-yrs">0 let</span></div><input type="range" id="in-hlv-yrs" min="1" max="40" step="1" value="15" oninput="runHLV()"></div>
+          <div class="control-group"><div class="control-header"><span class="control-label">Počet let do konce kariéry / dětí</span><span class="control-output" id="out-hlv-yrs">0 let</span></div><input type="range" id="in-hlv-yrs" min="1" max="40" step="1" value="15" oninput="runHLV()"></div>
           <div class="control-group"><div class="control-header"><span class="control-label">Zůstatek hypotéky a úvěrů</span><span class="control-output" id="out-hlv-hypo">0 Kč</span></div><input type="range" id="in-hlv-hypo" min="0" max="15000000" step="100000" value="3000000" oninput="runHLV()"></div>
           <div class="control-group"><div class="control-header"><span class="control-label">Počet dětí</span><span class="control-output" id="out-hlv-kids">0</span></div><input type="range" id="in-hlv-kids" min="0" max="6" step="1" value="2" oninput="runHLV()"></div>
         </div>
@@ -176,14 +174,13 @@ input[type=number], input[type=text], select { width: 100%; padding: 8px 12px; b
           <div class="control-group" style="margin-top:20px"><label class="control-label">Čistý měsíční příjem (Kč)</label><input type="number" id="in-hyp-inc" value="60000" oninput="runMortgage()"></div>
           <div class="control-group"><label class="control-label">Ostatní splátky (Kč)</label><input type="number" id="in-hyp-debts" value="0" oninput="runMortgage()"></div>
         </div>
-        <div class="card"><div class="card-title">Zůstatek jistiny v čase</div><div class="chart-wrapper"><canvas id="chartMortgage"></canvas></div></div>
+        <div class="card"><div class="card-title">Zůstatek jistiny (v letech)</div><div class="chart-wrapper"><canvas id="chartMortgage"></canvas></div></div>
       </div>
     </div>
 
     <div id="sec-mimoradna" class="section">
       <h1 class="header-title">Kouzlo mimořádné splátky</h1>
-      <p class="header-subtitle">O kolik peněz a let zkrátí zaplacení dluhu rychleji.</p>
-      <div class="info-box"><strong>Metodika:</strong> Každá koruna zaplacená nad rámec běžné splátky jde 100% do úmoru jistiny (ne do úroků). Graf ukazuje, jaký drastický rozdíl udělá jednorázové vložení úspor do úvěru.</div>
+      <p class="header-subtitle">O kolik peněz a let jednorázový vklad zkrátí zaplacení dluhu.</p>
       <div class="grid-4">
         <div class="stat-box"><div class="stat-label">Původní přeplatek úroků</div><div class="stat-value text-danger" id="mim-urok-stary">0 Kč</div></div>
         <div class="stat-box"><div class="stat-label">Nový přeplatek úroků</div><div class="stat-value text-success" id="mim-urok-novy">0 Kč</div></div>
@@ -201,17 +198,17 @@ input[type=number], input[type=text], select { width: 100%; padding: 8px 12px; b
           <div style="border-top: 1px solid var(--border); margin: 20px 0;"></div>
           <div class="control-group"><div class="control-header"><span class="control-label">Jednorázová mimořádná splátka Dnes</span><span class="control-output" id="out-mim-jed">0</span></div><input type="range" id="in-mim-jed" min="0" max="2000000" step="10000" value="200000" oninput="runMimoradna()"></div>
         </div>
-        <div class="card"><div class="card-title">Zůstatek dluhu: Původní vs. Zrychlený</div><div class="chart-wrapper"><canvas id="chartMimoradna"></canvas></div></div>
+        <div class="card"><div class="card-title">Zůstatek dluhu (v letech)</div><div class="chart-wrapper"><canvas id="chartMimoradna"></canvas></div></div>
       </div>
     </div>
 
     <div id="sec-spotrebak" class="section">
       <h1 class="header-title">Spotřebitelský úvěr a Odmazání</h1>
-      <p class="header-subtitle">Analýza drahého dluhu a vliv paralelního investování na jeho splacení.</p>
+      <p class="header-subtitle">Analýza drahého dluhu a vliv paralelního investování na jeho jednorázové splacení.</p>
       <div class="grid-4">
         <div class="stat-box"><div class="stat-label">Měsíční splátka úvěru</div><div class="stat-value text-danger" id="sp-splatka">0 Kč</div></div>
-        <div class="stat-box"><div class="stat-label">Celkem zaplaceno bance</div><div class="stat-value" id="sp-celkem">0 Kč</div></div>
         <div class="stat-box"><div class="stat-label">Přeplacenost (Úroky)</div><div class="stat-value text-warning" id="sp-urok">0 Kč</div></div>
+        <div class="stat-box"><div class="stat-label">Celkem zaplaceno bance</div><div class="stat-value" id="sp-celkem">0 Kč</div></div>
         <div class="stat-box"><div class="stat-label">Bod splacení investicí</div><div class="stat-value text-primary" id="sp-zapper">Nikdy</div></div>
       </div>
       <div class="grid-2">
@@ -223,21 +220,24 @@ input[type=number], input[type=text], select { width: 100%; padding: 8px 12px; b
             <div class="control-group"><div class="control-header"><span class="control-label">Doba splatnosti (roky)</span><span class="control-output" id="out-sp-y">0</span></div><input type="range" id="in-sp-y" min="1" max="15" step="1" value="5" oninput="runSpotrebak()"></div>
           </div>
           <div style="border-top: 1px solid var(--border); margin: 20px 0;"></div>
-          <div class="control-group"><div class="control-header"><span class="control-label">Měsíčně investuje bokem</span><span class="control-output" id="out-sp-im">0</span></div><input type="range" id="in-sp-im" min="0" max="20000" step="500" value="2000" oninput="runSpotrebak()"></div>
-          <div class="control-group"><div class="control-header"><span class="control-label">Výnos investice %</span><span class="control-output" id="out-sp-ir">0</span></div><input type="range" id="in-sp-ir" min="0" max="15" step="0.1" value="7.0" oninput="runSpotrebak()"></div>
+          <div class="card-title">Odstranění dluhu investicí</div>
+          <div class="grid-2" style="gap:10px">
+            <div class="control-group"><div class="control-header"><span class="control-label">Měsíčně investuje</span><span class="control-output" id="out-sp-im">0</span></div><input type="range" id="in-sp-im" min="0" max="20000" step="500" value="2000" oninput="runSpotrebak()"></div>
+            <div class="control-group"><div class="control-header"><span class="control-label">Výnos investice %</span><span class="control-output" id="out-sp-ir">0</span></div><input type="range" id="in-sp-ir" min="0" max="15" step="0.1" value="7.0" oninput="runSpotrebak()"></div>
+          </div>
         </div>
-        <div class="card"><div class="card-title">Dluh vs. Rezerva na doplacení</div><div class="chart-wrapper"><canvas id="chartSpotrebak"></canvas></div></div>
+        <div class="card"><div class="card-title">Dluh vs. Rezerva na doplacení (v letech)</div><div class="chart-wrapper"><canvas id="chartSpotrebak"></canvas></div></div>
       </div>
     </div>
 
     <div id="sec-rentbuy" class="section">
       <h1 class="header-title">Nájem vs. Vlastní bydlení</h1>
-      <p class="header-subtitle">Nájem není vyhazování peněz, pokud se ušetřené zdroje chytře investují.</p>
+      <p class="header-subtitle">Analýza, kdy přesně se vlastní bydlení začne finančně vyplácet oproti nájmu.</p>
       <div class="grid-4">
         <div class="stat-box"><div class="stat-label">Majetek (Vlastní)</div><div class="stat-value text-primary" id="rb-vlastni">0 Kč</div></div>
-        <div class="stat-box"><div class="stat-label">Majetek (Nájem+Invest)</div><div class="stat-value text-success" id="rb-najem">0 Kč</div></div>
-        <div class="stat-box"><div class="stat-label">Měsíčně (Hypo+Fond)</div><div class="stat-value" id="rb-splatka">0 Kč</div></div>
-        <div class="stat-box"><div class="stat-label">Měsíčně (Aktuální nájem)</div><div class="stat-value" id="rb-rent">0 Kč</div></div>
+        <div class="stat-box"><div class="stat-label">Majetek (Nájem+Investice)</div><div class="stat-value text-success" id="rb-najem">0 Kč</div></div>
+        <div class="stat-box"><div class="stat-label">Konečný rozdíl</div><div class="stat-value" id="rb-rozdil">0 Kč</div></div>
+        <div class="stat-box"><div class="stat-label">Vlastní se vyplatí od</div><div class="stat-value text-warning" id="rb-zlom">Nikdy</div></div>
       </div>
       <div class="grid-2">
         <div class="card">
@@ -247,14 +247,14 @@ input[type=number], input[type=text], select { width: 100%; padding: 8px 12px; b
             <div class="control-group"><div class="control-header"><span class="control-label">Akontace</span><span class="control-output" id="out-rb-dp">0</span></div><input type="range" id="in-rb-dp" min="0" max="5000000" step="50000" value="1000000" oninput="runRentBuy()"></div>
             <div class="control-group"><div class="control-header"><span class="control-label">Úrok hypo p.a.</span><span class="control-output" id="out-rb-mr">0</span></div><input type="range" id="in-rb-mr" min="1" max="10" step="0.1" value="4.5" oninput="runRentBuy()"></div>
           </div>
-          <div class="control-group"><div class="control-header"><span class="control-label">Srovnatelné nájemné</span><span class="control-output" id="out-rb-rent">0</span></div><input type="range" id="in-rb-rent" min="5000" max="60000" step="500" value="20000" oninput="runRentBuy()"></div>
+          <div class="control-group"><div class="control-header"><span class="control-label">Srovnatelné měsíční nájemné</span><span class="control-output" id="out-rb-rent">0</span></div><input type="range" id="in-rb-rent" min="5000" max="60000" step="500" value="20000" oninput="runRentBuy()"></div>
           <div class="grid-2" style="gap:10px">
-            <div class="control-group"><div class="control-header"><span class="control-label">Růst cen realit %</span><span class="control-output" id="out-rb-gr">0</span></div><input type="range" id="in-rb-gr" min="0" max="10" step="0.1" value="3.0" oninput="runRentBuy()"></div>
-            <div class="control-group"><div class="control-header"><span class="control-label">Výnos trhu %</span><span class="control-output" id="out-rb-ir">0</span></div><input type="range" id="in-rb-ir" min="0" max="12" step="0.1" value="7.0" oninput="runRentBuy()"></div>
+            <div class="control-group"><div class="control-header"><span class="control-label">Růst cen realit p.a.</span><span class="control-output" id="out-rb-gr">0</span></div><input type="range" id="in-rb-gr" min="0" max="10" step="0.1" value="3.0" oninput="runRentBuy()"></div>
+            <div class="control-group"><div class="control-header"><span class="control-label">Výnos trhu p.a.</span><span class="control-output" id="out-rb-ir">0</span></div><input type="range" id="in-rb-ir" min="0" max="12" step="0.1" value="7.0" oninput="runRentBuy()"></div>
           </div>
           <div class="control-group"><div class="control-header"><span class="control-label">Horizont (roky)</span><span class="control-output" id="out-rb-y">0</span></div><input type="range" id="in-rb-y" min="10" max="40" step="1" value="30" oninput="runRentBuy()"></div>
         </div>
-        <div class="card"><div class="card-title">Křivka tvoření majetku</div><div class="chart-wrapper"><canvas id="chartRentBuy"></canvas></div></div>
+        <div class="card"><div class="card-title">Křivka tvoření majetku (v letech)</div><div class="chart-wrapper"><canvas id="chartRentBuy"></canvas></div></div>
       </div>
     </div>
 
@@ -269,7 +269,7 @@ input[type=number], input[type=text], select { width: 100%; padding: 8px 12px; b
       </div>
       <div class="card" style="margin-bottom: 24px;">
         <div class="control-group" style="margin-bottom: 0;">
-          <div class="control-header"><span class="control-label">Časový horizont projekce</span><span class="control-output" id="out-port-y">15 let</span></div>
+          <div class="control-header"><span class="control-label">Časový horizont projekce (roky)</span><span class="control-output" id="out-port-y">15 let</span></div>
           <input type="range" id="in-port-y" min="1" max="40" step="1" value="15" oninput="renderPortfolio()">
         </div>
       </div>
@@ -304,13 +304,12 @@ input[type=number], input[type=text], select { width: 100%; padding: 8px 12px; b
         <div class="card"><div class="card-title">Aktuální rozložení</div><div class="chart-wrapper" style="height: 250px;"><canvas id="chartAllocCurr"></canvas></div></div>
         <div class="card"><div class="card-title">Budoucí rozložení</div><div class="chart-wrapper" style="height: 250px;"><canvas id="chartAllocFut"></canvas></div></div>
       </div>
-      <div class="card" style="margin-top: 24px;"><div class="card-title">Projekce růstu</div><div class="chart-wrapper"><canvas id="chartPortProj"></canvas></div></div>
+      <div class="card" style="margin-top: 24px;"><div class="card-title">Projekce růstu v letech</div><div class="chart-wrapper"><canvas id="chartPortProj"></canvas></div></div>
     </div>
 
     <div id="sec-cekani" class="section">
       <h1 class="header-title">Cena za čekání (Ztracený čas)</h1>
       <p class="header-subtitle">Kolik stojí klienta odklad investičního rozhodnutí.</p>
-      <div class="info-box"><strong>Metodika:</strong> Model ukazuje magii složeného úročení v čase. Odložením investice o pouhých pár let (protože klient "čeká na lepší dobu") přichází o ty nejvýnosnější roky na konci horizontu, které by mu úroky z úroků vygenerovaly.</div>
       <div class="grid-4">
         <div class="stat-box"><div class="stat-label">Začne Dnes</div><div class="stat-value text-success" id="cek-0">0 Kč</div></div>
         <div class="stat-box"><div class="stat-label">Odklad o 1 rok ztratí</div><div class="stat-value text-warning" id="cek-1">0 Kč</div></div>
@@ -322,7 +321,7 @@ input[type=number], input[type=text], select { width: 100%; padding: 8px 12px; b
           <div class="card-title">Plánovaná investice</div>
           <div class="control-group"><div class="control-header"><span class="control-label">Měsíční úložka</span><span class="control-output" id="out-cek-m">0</span></div><input type="range" id="in-cek-m" min="500" max="50000" step="500" value="5000" oninput="runCekani()"></div>
           <div class="control-group"><div class="control-header"><span class="control-label">Očekávaný výnos p.a. %</span><span class="control-output" id="out-cek-r">0</span></div><input type="range" id="in-cek-r" min="1" max="15" step="0.1" value="8.0" oninput="runCekani()"></div>
-          <div class="control-group"><div class="control-header"><span class="control-label">Původní cíl (Horizont)</span><span class="control-output" id="out-cek-y">0</span></div><input type="range" id="in-cek-y" min="10" max="40" step="1" value="25" oninput="runCekani()"></div>
+          <div class="control-group"><div class="control-header"><span class="control-label">Původní cíl (Horizont v letech)</span><span class="control-output" id="out-cek-y">0</span></div><input type="range" id="in-cek-y" min="10" max="40" step="1" value="25" oninput="runCekani()"></div>
         </div>
         <div class="card"><div class="card-title">Budoucí majetek podle startu</div><div class="chart-wrapper"><canvas id="chartCekani"></canvas></div></div>
       </div>
@@ -354,7 +353,7 @@ input[type=number], input[type=text], select { width: 100%; padding: 8px 12px; b
             <div class="control-group"><div class="control-header"><span class="control-label">Výnos v rentě %</span><span class="control-output" id="out-ren-r2">4 %</span></div><input type="range" id="in-ren-r2" min="0" max="10" step="0.1" value="4" oninput="runRenta()"></div>
           </div>
         </div>
-        <div class="card"><div class="card-title">Křivka majetku k rentě</div><div class="chart-wrapper"><canvas id="chartRenta"></canvas></div></div>
+        <div class="card"><div class="card-title">Křivka majetku k rentě (v letech)</div><div class="chart-wrapper"><canvas id="chartRenta"></canvas></div></div>
       </div>
     </div>
 
@@ -382,7 +381,7 @@ input[type=number], input[type=text], select { width: 100%; padding: 8px 12px; b
             <div class="control-group"><div class="control-header"><span class="control-label">Výnos %</span><span class="control-output" id="out-ih-ir">0</span></div><input type="range" id="in-ih-ir" min="0" max="15" step="0.1" value="7.0" oninput="runInvHypo()"></div>
           </div>
         </div>
-        <div class="card"><div class="card-title">Růst aktiv vs. Úmor dluhu</div><div class="chart-wrapper"><canvas id="chartInvHypo"></canvas></div></div>
+        <div class="card"><div class="card-title">Růst aktiv vs. Úmor dluhu (v letech)</div><div class="chart-wrapper"><canvas id="chartInvHypo"></canvas></div></div>
       </div>
     </div>
 
@@ -436,7 +435,7 @@ function openTab(tabId) {
 }
 
 // ==========================================
-// 2. L & O (NOVÉ NÁSTROJE)
+// 2. L & O (LIKVIDITA A OCHRANA)
 // ==========================================
 function runRezerva() {
   var E = Number(document.getElementById('in-rez-exp').value);
@@ -451,147 +450,30 @@ function runRezerva() {
   document.getElementById('rez-cur').textContent = fmt(S);
   document.getElementById('rez-dif').textContent = fmt(dif);
   
-  safeDraw('rezerva', 'chartRezerva', 'bar', ['3 Měsíce', '6 Měsíců', 'Aktuálně'], [
-    { label: 'Hodnota rezervy', data: [min, opt, S], backgroundColor: ['#f59e0b', '#10b981', '#2563eb'] }
-  ]);
+  safeDraw('rezerva', 'chartRezerva', 'bar', ['3 Měsíce', '6 Měsíců', 'Aktuálně'], [{ label: 'Hodnota rezervy', data: [min, opt, S], backgroundColor: ['#f59e0b', '#10b981', '#2563eb'] }]);
 }
 
 function runVypadek() {
-  var I = Number(document.getElementById('in-vyp-inc').value);
-  var E = Number(document.getElementById('in-vyp-exp').value);
-  var S = Number(document.getElementById('in-vyp-sav').value);
-  
-  document.getElementById('out-vyp-inc').textContent = fmt(I);
-  document.getElementById('out-vyp-exp').textContent = fmt(E);
-  document.getElementById('out-vyp-sav').textContent = fmt(S);
-  
-  var nemoc = I * 0.6; // Odhad nemocenska
-  var inv = I * 0.45; // Odhad invalidita
-  var def = E - inv;
-  var time = def > 0 ? (S / def) : 999;
-  if(time > 999) time = 999;
-  
-  document.getElementById('vyp-inc').textContent = fmt(I);
-  document.getElementById('vyp-exp').textContent = fmt(E);
-  document.getElementById('vyp-inv').textContent = fmt(inv);
+  var I = Number(document.getElementById('in-vyp-inc').value), E = Number(document.getElementById('in-vyp-exp').value), S = Number(document.getElementById('in-vyp-sav').value);
+  document.getElementById('out-vyp-inc').textContent = fmt(I); document.getElementById('out-vyp-exp').textContent = fmt(E); document.getElementById('out-vyp-sav').textContent = fmt(S);
+  var inv = I * 0.45, def = E - inv, time = def > 0 ? (S / def) : 999; if(time > 999) time = 999;
+  document.getElementById('vyp-inc').textContent = fmt(I); document.getElementById('vyp-exp').textContent = fmt(E); document.getElementById('vyp-inv').textContent = fmt(inv);
   document.getElementById('vyp-time').textContent = def > 0 ? (Math.round(time) + ' měs.') : 'Nekonečno';
-  
-  safeDraw('vypadek', 'chartVypadek', 'bar', ['1. Zdraví (Příjem)', '2. Výdaje rodiny', '3. Invalidita (Příjem)'], [
-    { label: 'Měsíční cashflow', data: [I, E, inv], backgroundColor: ['#10b981', '#ef4444', '#f59e0b'] }
-  ]);
+  safeDraw('vypadek', 'chartVypadek', 'bar', ['1. Zdraví (Příjem)', '2. Výdaje rodiny', '3. Invalidita (Příjem)'], [{ label: 'Měsíční cashflow', data: [I, E, inv], backgroundColor: ['#10b981', '#ef4444', '#f59e0b'] }]);
 }
 
 function runHLV() {
-  var I = Number(document.getElementById('in-hlv-inc').value);
-  var Y = Number(document.getElementById('in-hlv-yrs').value);
-  var H = Number(document.getElementById('in-hlv-hypo').value);
-  var K = Number(document.getElementById('in-hlv-kids').value);
-  
-  document.getElementById('out-hlv-inc').textContent = fmt(I);
-  document.getElementById('out-hlv-yrs').textContent = Y + ' let';
-  document.getElementById('out-hlv-hypo').textContent = fmt(H);
-  document.getElementById('out-hlv-kids').textContent = K;
-  
-  // Metodika: Chceme nahradit 50% prijmu do konce kariery + hypoteka + 1M na dite
-  var repInc = (I * 12 * Y) * 0.5;
-  var repKids = K * 1000000;
-  var total = repInc + repKids + H;
-  
-  document.getElementById('hlv-total').textContent = fmt(total);
-  document.getElementById('hlv-debt').textContent = fmt(H);
-  document.getElementById('hlv-kids').textContent = fmt(repKids);
-  document.getElementById('hlv-inc').textContent = fmt(repInc);
-  
-  safeDraw('hlv', 'chartHLV', 'doughnut', ['Hypotéka/Dluhy', 'Děti (Studium)', 'Zajištění životního standardu'], [
-    { data: [H, repKids, repInc], backgroundColor: ['#ef4444', '#f59e0b', '#10b981'], borderWidth:0 }
-  ], { cutout: '65%' });
+  var I = Number(document.getElementById('in-hlv-inc').value), Y = Number(document.getElementById('in-hlv-yrs').value), H = Number(document.getElementById('in-hlv-hypo').value), K = Number(document.getElementById('in-hlv-kids').value);
+  document.getElementById('out-hlv-inc').textContent = fmt(I); document.getElementById('out-hlv-yrs').textContent = Y + ' let'; document.getElementById('out-hlv-hypo').textContent = fmt(H); document.getElementById('out-hlv-kids').textContent = K;
+  var repInc = (I * 12 * Y) * 0.5, repKids = K * 1000000, total = repInc + repKids + H;
+  document.getElementById('hlv-total').textContent = fmt(total); document.getElementById('hlv-debt').textContent = fmt(H); document.getElementById('hlv-kids').textContent = fmt(repKids); document.getElementById('hlv-inc').textContent = fmt(repInc);
+  safeDraw('hlv', 'chartHLV', 'doughnut', ['Hypotéka/Dluhy', 'Děti (Studium)', 'Náhrada příjmu'], [{ data: [H, repKids, repInc], backgroundColor: ['#ef4444', '#f59e0b', '#10b981'], borderWidth:0 }], { cutout: '65%' });
 }
 
 // ==========================================
-// 3. DLUHY A MIMOŘÁDNÁ SPLÁTKA (NOVÉ)
+// 3. DLUHY (NA ČASOVÉ OSE V LETECH)
 // ==========================================
-function runMimoradna() {
-  var P = Number(document.getElementById('in-mim-p').value);
-  var R = Number(document.getElementById('in-mim-r').value);
-  var Y = Number(document.getElementById('in-mim-y').value);
-  var J = Number(document.getElementById('in-mim-jed').value);
-  
-  document.getElementById('out-mim-p').textContent = fmt(P);
-  document.getElementById('out-mim-r').textContent = R.toFixed(1) + '%';
-  document.getElementById('out-mim-y').textContent = Y;
-  document.getElementById('out-mim-jed').textContent = fmt(J);
-  
-  var pmt = getPmt(R/100/12, Y*12, P);
-  var staryUrok = (pmt * Y * 12) - P;
-  
-  // Zrychlený plán (Odečteme jednoráz z jistiny HNED, splátka zůstává stejná, krátí se čas)
-  var newP = P - J;
-  var rMon = R/100/12;
-  
-  // Výpočet nového počtu měsíců nper = -log(1 - r*P/pmt) / log(1+r)
-  var nper = 0;
-  if (pmt > newP * rMon) {
-    nper = -Math.log(1 - rMon * newP / pmt) / Math.log(1 + rMon);
-  }
-  
-  var novyUrok = (pmt * nper) - newP;
-  if(novyUrok < 0) novyUrok = 0;
-  var usetreno = staryUrok - novyUrok;
-  var uspCas = Y - (nper / 12);
-  
-  document.getElementById('mim-urok-stary').textContent = fmt(staryUrok);
-  document.getElementById('mim-urok-novy').textContent = fmt(novyUrok);
-  document.getElementById('mim-usp-penize').textContent = fmt(usetreno);
-  document.getElementById('mim-usp-cas').textContent = Math.max(0, uspCas).toFixed(1) + ' let';
-  
-  // Generování křivek
-  var lbl = [], dOld = [], dNew = [];
-  var bOld = P, bNew = newP;
-  for(var m=0; m<=Y*12; m+=6) {
-    lbl.push(m/12);
-    dOld.push(Math.round(bOld));
-    dNew.push(Math.round(bNew));
-    for(var i=0; i<6; i++) {
-      bOld -= (pmt - bOld*rMon); if(bOld<0) bOld = 0;
-      bNew -= (pmt - bNew*rMon); if(bNew<0) bNew = 0;
-    }
-  }
-  
-  safeDraw('mimoradna', 'chartMimoradna', 'line', lbl, [
-    { label: 'Bez mimořádné splátky', data: dOld, borderColor: '#ef4444', borderDash: [5,5], pointRadius:0 },
-    { label: 'S vložením '+fmt(J), data: dNew, borderColor: '#10b981', backgroundColor: 'rgba(16,185,129,0.1)', fill:true, pointRadius:0 }
-  ]);
-}
-
-// CENA ZA ČEKÁNÍ
-function runCekani() {
-  var M = Number(document.getElementById('in-cek-m').value);
-  var R = Number(document.getElementById('in-cek-r').value);
-  var Y = Number(document.getElementById('in-cek-y').value);
-  
-  document.getElementById('out-cek-m').textContent = fmt(M);
-  document.getElementById('out-cek-r').textContent = R.toFixed(1) + '%';
-  document.getElementById('out-cek-y').textContent = Y;
-  
-  var fv0 = calcFutureValue(0, M, R, Y);
-  var fv1 = calcFutureValue(0, M, R, Y - 1);
-  var fv3 = calcFutureValue(0, M, R, Math.max(0, Y - 3));
-  var fv5 = calcFutureValue(0, M, R, Math.max(0, Y - 5));
-  
-  document.getElementById('cek-0').textContent = fmt(fv0);
-  document.getElementById('cek-1').textContent = '- ' + fmt(fv0 - fv1);
-  document.getElementById('cek-3').textContent = '- ' + fmt(fv0 - fv3);
-  document.getElementById('cek-5').textContent = '- ' + fmt(fv0 - fv5);
-  
-  safeDraw('cekani', 'chartCekani', 'bar', ['Začátek DNES', 'Odklad o 1 ROK', 'Odklad o 3 ROKY', 'Odklad o 5 LET'], [
-    { label: 'Cílová částka', data: [fv0, fv1, fv3, fv5], backgroundColor: ['#10b981', '#f59e0b', '#ef4444', '#b91c1c'], borderRadius: 4 }
-  ]);
-}
-
-// ==========================================
-// ZBYTKOVÉ FUNKCE Z MINULA
-// ==========================================
-function runMortgage() { /* Z minula, ponecháno pro zachování plnosti, i když zde nevypsáno z důvodu limitu znaků, ale ty to vkládáš kompletně */ 
+function runMortgage() {
   var P = Number(document.getElementById('in-hyp-p').value), R = Number(document.getElementById('in-hyp-r').value), Y = Number(document.getElementById('in-hyp-y').value);
   var Inc = Number(document.getElementById('in-hyp-inc').value) || 1, Debts = Number(document.getElementById('in-hyp-debts').value) || 0;
   document.getElementById('out-hyp-p').textContent = fmt(P); document.getElementById('out-hyp-r').textContent = R.toFixed(1) + '%'; document.getElementById('out-hyp-y').textContent = Y;
@@ -603,6 +485,22 @@ function runMortgage() { /* Z minula, ponecháno pro zachování plnosti, i kdy�
   safeDraw('mortgage', 'chartMortgage', 'bar', lbl, [{ label: 'Zůstatek jistiny', data: dBal, backgroundColor: '#2563eb', borderRadius: 4 }]);
 }
 
+function runMimoradna() {
+  var P = Number(document.getElementById('in-mim-p').value), R = Number(document.getElementById('in-mim-r').value), Y = Number(document.getElementById('in-mim-y').value), J = Number(document.getElementById('in-mim-jed').value);
+  document.getElementById('out-mim-p').textContent = fmt(P); document.getElementById('out-mim-r').textContent = R.toFixed(1) + '%'; document.getElementById('out-mim-y').textContent = Y; document.getElementById('out-mim-jed').textContent = fmt(J);
+  var pmt = getPmt(R/100/12, Y*12, P), staryUrok = (pmt * Y * 12) - P, newP = P - J, rMon = R/100/12, nper = 0;
+  if (pmt > newP * rMon) { nper = -Math.log(1 - rMon * newP / pmt) / Math.log(1 + rMon); }
+  var novyUrok = (pmt * nper) - newP; if(novyUrok < 0) novyUrok = 0;
+  var usetreno = staryUrok - novyUrok, uspCas = Y - (nper / 12);
+  document.getElementById('mim-urok-stary').textContent = fmt(staryUrok); document.getElementById('mim-urok-novy').textContent = fmt(novyUrok); document.getElementById('mim-usp-penize').textContent = fmt(usetreno); document.getElementById('mim-usp-cas').textContent = Math.max(0, uspCas).toFixed(1) + ' let';
+  var lbl = [], dOld = [], dNew = [], bOld = P, bNew = newP;
+  for(var m=0; m<=Y*12; m+=12) {
+    lbl.push(m/12); dOld.push(Math.round(bOld)); dNew.push(Math.round(bNew));
+    for(var i=0; i<12; i++) { bOld -= (pmt - bOld*rMon); if(bOld<0) bOld = 0; bNew -= (pmt - bNew*rMon); if(bNew<0) bNew = 0; }
+  }
+  safeDraw('mimoradna', 'chartMimoradna', 'line', lbl, [{ label: 'Bez splátky', data: dOld, borderColor: '#ef4444', borderDash: [5,5], pointRadius:0 }, { label: 'S vložením '+fmt(J), data: dNew, borderColor: '#10b981', backgroundColor: 'rgba(16,185,129,0.1)', fill:true, pointRadius:0 }]);
+}
+
 function runSpotrebak() {
   var P = Number(document.getElementById('in-sp-p').value), R = Number(document.getElementById('in-sp-r').value), Y = Number(document.getElementById('in-sp-y').value);
   var iM = Number(document.getElementById('in-sp-im').value), iR = Number(document.getElementById('in-sp-ir').value);
@@ -611,27 +509,57 @@ function runSpotrebak() {
   document.getElementById('sp-splatka').textContent = fmt(pmt); document.getElementById('sp-celkem').textContent = fmt(pmt * Y * 12); document.getElementById('sp-urok').textContent = fmt((pmt * Y * 12) - P);
   var lbl=[], dDebt=[], dInv=[], bal=P, inv=0, cross="Nikdy";
   for(var m=0; m<=Y*12; m++) {
-    if(m%3===0 || m===Y*12) { lbl.push(m); dDebt.push(Math.round(bal)); dInv.push(Math.round(inv)); }
-    if(cross==="Nikdy" && inv>=bal && m>0) cross = "Za " + m + " měsíců";
+    if(m%12===0 || m===Y*12) { lbl.push((m/12).toFixed(1) + ' let'); dDebt.push(Math.round(bal)); dInv.push(Math.round(inv)); }
+    if(cross==="Nikdy" && inv>=bal && m>0) cross = "Za " + (m/12).toFixed(1) + " let";
     if(m<Y*12) { bal -= (pmt-bal*(R/100/12)); if(bal<0) bal=0; inv = inv*(1+iR/100/12)+iM; }
   }
   document.getElementById('sp-zapper').innerHTML='<span class="badge ' + (cross!=='Nikdy'?'badge-ok':'badge-warn') + '">' + cross + '</span>';
-  safeDraw('spotrebak', 'chartSpotrebak', 'line', lbl, [{ label: 'Dluh (bance)', data: dDebt, borderColor: '#ef4444', fill:true, backgroundColor: 'rgba(239,68,68,0.1)', pointRadius:0 }, { label: 'Rezerva (na doplacení)', data: dInv, borderColor: '#10b981', borderDash: [5,5], pointRadius:0 }]);
+  safeDraw('spotrebak', 'chartSpotrebak', 'line', lbl, [{ label: 'Dluh bance', data: dDebt, borderColor: '#ef4444', fill:true, backgroundColor: 'rgba(239,68,68,0.1)', pointRadius:0 }, { label: 'Investiční rezerva', data: dInv, borderColor: '#10b981', borderDash: [5,5], pointRadius:0 }]);
 }
 
 function runRentBuy() {
-  var P = Number(document.getElementById('in-rb-p').value), DP = Number(document.getElementById('in-rb-dp').value), MR = Number(document.getElementById('in-rb-mr').value), Rent = Number(document.getElementById('in-rb-rent').value), GR = Number(document.getElementById('in-rb-gr').value), IR = Number(document.getElementById('in-rb-ir').value), Y = Number(document.getElementById('in-rb-y').value);
-  document.getElementById('out-rb-p').textContent = fmt(P); document.getElementById('out-rb-dp').textContent = fmt(DP); document.getElementById('out-rb-mr').textContent = MR.toFixed(1)+'%'; document.getElementById('out-rb-rent').textContent = fmt(Rent); document.getElementById('out-rb-gr').textContent = GR.toFixed(1)+'%'; document.getElementById('out-rb-ir').textContent = IR.toFixed(1)+'%'; document.getElementById('out-rb-y').textContent = Y;
+  var P = Number(document.getElementById('in-rb-p').value), DP = Number(document.getElementById('in-rb-dp').value), MR = Number(document.getElementById('in-rb-mr').value);
+  var Rent = Number(document.getElementById('in-rb-rent').value), GR = Number(document.getElementById('in-rb-gr').value), IR = Number(document.getElementById('in-rb-ir').value), Y = Number(document.getElementById('in-rb-y').value);
+  document.getElementById('out-rb-p').textContent = fmt(P); document.getElementById('out-rb-dp').textContent = fmt(DP); document.getElementById('out-rb-mr').textContent = MR.toFixed(1)+'%';
+  document.getElementById('out-rb-rent').textContent = fmt(Rent); document.getElementById('out-rb-gr').textContent = GR.toFixed(1)+'%'; document.getElementById('out-rb-ir').textContent = IR.toFixed(1)+'%'; document.getElementById('out-rb-y').textContent = Y;
+  
   var loan = P - DP, mortPmt = getPmt(MR/100/12, Y*12, loan), costOwn = mortPmt + (P * 0.01 / 12);
   var lbl = [], dOwn = [], dRent = [], propVal = P, bal = loan, inv = DP, currRent = Rent;
+  var zlom = "Nikdy";
+  
   for(var y=0; y<=Y; y++) {
-    lbl.push(y); dOwn.push(Math.round(propVal - Math.max(0, bal))); dRent.push(Math.round(inv));
+    lbl.push(y); var valOwn = propVal - Math.max(0, bal); dOwn.push(Math.round(valOwn)); dRent.push(Math.round(inv));
+    if(zlom === "Nikdy" && valOwn > inv && y > 0) zlom = y + ". rok";
     if(y<Y) { propVal *= (1 + GR/100); for(var m=0; m<12; m++) { bal -= (mortPmt - bal*(MR/100/12)); var diff = costOwn - currRent; inv = inv*(1 + IR/100/12) + (diff > 0 ? diff : 0); } currRent *= (1 + 0.02); }
   }
-  document.getElementById('rb-vlastni').textContent = fmt(dOwn[Y]); document.getElementById('rb-najem').textContent = fmt(dRent[Y]); document.getElementById('rb-splatka').textContent = fmt(costOwn); document.getElementById('rb-rent').textContent = fmt(Rent);
-  safeDraw('rentbuy', 'chartRentBuy', 'line', lbl, [{ label: 'Vlastní', data: dOwn, borderColor: '#2563eb', backgroundColor: 'rgba(37,99,235,0.1)', fill:true, pointRadius:0 }, { label: 'Nájem', data: dRent, borderColor: '#10b981', borderWidth: 2, borderDash: [5,5], pointRadius:0 }]);
+  
+  document.getElementById('rb-vlastni').textContent = fmt(dOwn[Y]); document.getElementById('rb-najem').textContent = fmt(dRent[Y]);
+  var rozdil = dOwn[Y] - dRent[Y];
+  document.getElementById('rb-rozdil').innerHTML = '<span class="' + (rozdil>=0?'text-success':'text-danger') + '">' + (rozdil>0?'+':'') + fmt(rozdil) + '</span>';
+  document.getElementById('rb-zlom').innerHTML = '<span class="badge ' + (zlom!=='Nikdy'?'badge-ok':'badge-warn') + '">' + zlom + '</span>';
+  
+  safeDraw('rentbuy', 'chartRentBuy', 'line', lbl, [{ label: 'Vlastní', data: dOwn, borderColor: '#2563eb', backgroundColor: 'rgba(37,99,235,0.1)', fill:true, pointRadius:0 }, { label: 'Nájem + Invest.', data: dRent, borderColor: '#10b981', borderWidth: 2, borderDash: [5,5], pointRadius:0 }]);
 }
 
+function runInvHypo() {
+  var hP = Number(document.getElementById('in-ih-hp').value), hR = Number(document.getElementById('in-ih-hr').value), hY = Number(document.getElementById('in-ih-hy').value);
+  var iP = Number(document.getElementById('in-ih-ip').value), iM = Number(document.getElementById('in-ih-im').value), iR = Number(document.getElementById('in-ih-ir').value);
+  document.getElementById('out-ih-hp').textContent = fmt(hP); document.getElementById('out-ih-hr').textContent = hR.toFixed(1)+'%'; document.getElementById('out-ih-hy').textContent = hY;
+  document.getElementById('out-ih-ip').textContent = fmt(iP); document.getElementById('out-ih-im').textContent = fmt(iM); document.getElementById('out-ih-ir').textContent = iR.toFixed(1)+'%';
+  
+  var pmt = getPmt(hR/100/12, hY*12, hP); var lbl=[], dNet=[], dDebt=[], dInv=[], bal=hP, inv=iP, cross="Nikdy";
+  for(var m=0; m<=hY*12; m++) {
+    if(m%12===0) { lbl.push(m/12); dDebt.push(Math.round(bal)); dInv.push(Math.round(inv)); dNet.push(Math.round(inv-bal)); }
+    if(cross==="Nikdy" && inv>bal) cross = "V " + Math.floor(m/12) + ". roce";
+    if(m<hY*12) { bal -= (pmt-bal*(hR/100/12)); if(bal<0) bal=0; inv = inv*(1+iR/100/12)+iM; }
+  }
+  document.getElementById('ih-netwealth').textContent=fmt(inv-bal); document.getElementById('ih-debt').textContent=fmt(bal); document.getElementById('ih-inv').textContent=fmt(inv); document.getElementById('ih-crossover').innerHTML='<span class="badge ' + (cross!=='Nikdy'?'badge-ok':'badge-warn') + '">' + cross + '</span>';
+  safeDraw('invhypo', 'chartInvHypo', 'line', lbl, [{ label: 'Čistý majetek', data: dNet, borderColor: '#10b981', backgroundColor: 'rgba(16,185,129,0.1)', fill:true, pointRadius:0 }, { label: 'Investice', data: dInv, borderColor: '#3b82f6', borderDash: [5,5], pointRadius:0 }, { label: 'Dluh z hypo', data: dDebt, borderColor: '#ef4444', pointRadius:0 }]);
+}
+
+// ==========================================
+// 4. RENTA A INVESTICE
+// ==========================================
 var myPortfolio = [];
 function addPortfolioItem() {
   var name = document.getElementById('add-p-name').value.trim(), val = Number(document.getElementById('add-p-val').value) || 0, mth = Number(document.getElementById('add-p-m').value) || 0, yield = Number(document.getElementById('add-p-yield').value) || 0, cat = document.getElementById('add-p-cat').value;
@@ -646,7 +574,7 @@ function renderPortfolio() {
     var color = '#94a3b8', catName = '';
     if(item.category === 'fin') { sumFinCurr += item.value; sumFinFut += fv; color = '#10b981'; catName='Finanční'; }
     if(item.category === 'real_dir') { sumRealDirCurr += item.value; sumRealDirFut += fv; color = '#2563eb'; catName='Nemovitost'; }
-    if(item.category === 'real_fund') { sumRealFundCurr += item.value; sumRealFundFut += fv; color = '#0ea5e9'; catName='Realitní fond'; }
+    if(item.category === 'real_fund') { sumRealFundCurr += item.value; sumRealFundFut += fv; color = '#0ea5e9'; catName='Real. fond'; }
     if(item.category === 'kom') { sumKomCurr += item.value; sumKomFut += fv; color = '#f59e0b'; catName='Komodita'; }
     html += '<div class="item-row"><div style="display:flex; align-items:center;"><span class="item-color" style="background:'+color+';"></span><b>'+item.name+'</b></div> <div style="text-align:right;">'+fmt(item.value)+'<button style="color:red; border:none; background:none; cursor:pointer; margin-left:10px;" onclick="myPortfolio.splice('+i+',1); renderPortfolio();">✕</button></div></div>';
   }
@@ -659,8 +587,16 @@ function renderPortfolio() {
     safeDraw('allocCurr', 'chartAllocCurr', 'doughnut', labels, [{ data: [sumFinCurr, sumRealDirCurr, sumRealFundCurr, sumKomCurr], backgroundColor: colors, borderWidth: 0 }], { cutout: '65%', plugins: { legend: { position: 'right' } } });
     safeDraw('allocFut', 'chartAllocFut', 'doughnut', labels, [{ data: [sumFinFut, sumRealDirFut, sumRealFundFut, sumKomFut], backgroundColor: colors, borderWidth: 0 }], { cutout: '65%', plugins: { legend: { position: 'right' } } });
     var lblProj = [], dataProj = []; for(var y=0; y<=Y; y++) { lblProj.push(y); var pVal = 0; for(var k=0; k<myPortfolio.length; k++) pVal += calcFutureValue(myPortfolio[k].value, myPortfolio[k].monthly, myPortfolio[k].yield, y); dataProj.push(Math.round(pVal)); }
-    safeDraw('portProj', 'chartPortProj', 'line', lblProj, [{ label: 'Projekce majetku', data: dataProj, borderColor: '#10b981', backgroundColor: 'rgba(16,185,129,0.1)', fill:true, pointRadius: 0 }]);
+    safeDraw('portProj', 'chartPortProj', 'line', lblProj, [{ label: 'Projekce', data: dataProj, borderColor: '#10b981', backgroundColor: 'rgba(16,185,129,0.1)', fill:true, pointRadius: 0 }]);
   }
+}
+
+function runCekani() {
+  var M = Number(document.getElementById('in-cek-m').value), R = Number(document.getElementById('in-cek-r').value), Y = Number(document.getElementById('in-cek-y').value);
+  document.getElementById('out-cek-m').textContent = fmt(M); document.getElementById('out-cek-r').textContent = R.toFixed(1) + '%'; document.getElementById('out-cek-y').textContent = Y;
+  var fv0 = calcFutureValue(0, M, R, Y), fv1 = calcFutureValue(0, M, R, Y - 1), fv3 = calcFutureValue(0, M, R, Math.max(0, Y - 3)), fv5 = calcFutureValue(0, M, R, Math.max(0, Y - 5));
+  document.getElementById('cek-0').textContent = fmt(fv0); document.getElementById('cek-1').textContent = '- ' + fmt(fv0 - fv1); document.getElementById('cek-3').textContent = '- ' + fmt(fv0 - fv3); document.getElementById('cek-5').textContent = '- ' + fmt(fv0 - fv5);
+  safeDraw('cekani', 'chartCekani', 'bar', ['Začátek DNES', 'Odklad o 1 ROK', 'Odklad o 3 ROKY', 'Odklad o 5 LET'], [{ label: 'Cílová částka', data: [fv0, fv1, fv3, fv5], backgroundColor: ['#10b981', '#f59e0b', '#ef4444', '#b91c1c'], borderRadius: 4 }]);
 }
 
 function runRenta() {
@@ -677,21 +613,6 @@ function runRenta() {
   var lbl = [], dVal = [], curr_P = P, curr_M = 0;
   for(var y=0; y<=yearsToSave + duration; y++) { lbl.push("Věk " + (A1+y)); var total = curr_P + curr_M; dVal.push(Math.round(total)); if(y < yearsToSave) { curr_P = curr_P * (1+RP/100); curr_M = curr_M * (1+RM/100) + (pmt*12); } else { if (y === yearsToSave) { curr_P = total; curr_M = 0; } curr_P = curr_P * (1+R2/100) - (W*12); if(curr_P < 0) curr_P = 0; } }
   safeDraw('renta', 'chartRenta', 'line', lbl, [{ label: 'Kapitál', data: dVal, borderColor: '#3b82f6', backgroundColor: 'rgba(59,130,246,0.1)', fill:true, pointRadius:0 }]);
-}
-
-function runInvHypo() {
-  var hP = Number(document.getElementById('in-ih-hp').value), hR = Number(document.getElementById('in-ih-hr').value), hY = Number(document.getElementById('in-ih-hy').value);
-  var iP = Number(document.getElementById('in-ih-ip').value), iM = Number(document.getElementById('in-ih-im').value), iR = Number(document.getElementById('in-ih-ir').value);
-  document.getElementById('out-ih-hp').textContent = fmt(hP); document.getElementById('out-ih-hr').textContent = hR.toFixed(1)+'%'; document.getElementById('out-ih-hy').textContent = hY;
-  document.getElementById('out-ih-ip').textContent = fmt(iP); document.getElementById('out-ih-im').textContent = fmt(iM); document.getElementById('out-ih-ir').textContent = iR.toFixed(1)+'%';
-  var pmt = getPmt(hR/100/12, hY*12, hP); var lbl=[], dNet=[], dDebt=[], dInv=[], bal=hP, inv=iP, cross="Nikdy";
-  for(var m=0; m<=hY*12; m++) {
-    if(m%12===0) { lbl.push(m/12); dDebt.push(Math.round(bal)); dInv.push(Math.round(inv)); dNet.push(Math.round(inv-bal)); }
-    if(cross==="Nikdy" && inv>bal) cross = "V " + Math.floor(m/12) + ". roce";
-    if(m<hY*12) { bal -= (pmt-bal*(hR/100/12)); if(bal<0) bal=0; inv = inv*(1+iR/100/12)+iM; }
-  }
-  document.getElementById('ih-netwealth').textContent=fmt(inv-bal); document.getElementById('ih-debt').textContent=fmt(bal); document.getElementById('ih-inv').textContent=fmt(inv); document.getElementById('ih-crossover').innerHTML='<span class="badge ' + (cross!=='Nikdy'?'badge-ok':'badge-warn') + '">' + cross + '</span>';
-  safeDraw('invhypo', 'chartInvHypo', 'line', lbl, [{ label: 'Čistý majetek', data: dNet, borderColor: '#10b981', backgroundColor: 'rgba(16,185,129,0.1)', fill:true, pointRadius:0 }, { label: 'Investice', data: dInv, borderColor: '#3b82f6', borderDash: [5,5], pointRadius:0 }, { label: 'Zůstatek hypotéky', data: dDebt, borderColor: '#ef4444', pointRadius:0 }]);
 }
 
 window.onload = function() { openTab('rezerva'); };
